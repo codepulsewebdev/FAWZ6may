@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw Cords | Fawz Haberdashery</title>
+
+    <style>
+        :root { 
+            --fawz-red: #e31e24; 
+            --fawz-dark: #1a1a1a; 
+            --fawz-grey: #f8f8f8;
+            --border: #eeeeee;
+        }
+
+        body { margin: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; background: #ffffff; color: var(--fawz-dark); }
+        header { position: sticky; top: 0; background: #ffffff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--fawz-red); box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000; }
+        header h1 { color: var(--fawz-dark); font-size: 1.4em; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        header h1 span { color: var(--fawz-red); }
+        nav a { color: var(--fawz-dark); margin-left: 20px; text-decoration: none; font-weight: 700; font-size: 0.9em; }
+
+        .section { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
+        .section h3 { text-align: center; font-size: 2.2em; margin-bottom: 50px; text-transform: uppercase; }
+        .section h3::after { content: ''; display: block; width: 60px; height: 4px; background: var(--fawz-red); margin: 10px auto; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .card { background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .card img { width: 100%; height: 250px; object-fit: contain; margin-bottom: 20px; }
+        .card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: var(--fawz-red); transform: translateY(-5px); }
+        .card strong { display: block; color: var(--fawz-dark); font-size: 1.2em; text-transform: uppercase; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
+        .modal-content { background: white; margin: 5vh auto; width: 95%; max-width: 1000px; height: 85vh; display: flex; border-radius: 8px; overflow: hidden; position: relative; }
+        .modal-left { flex: 1; background: #fafafa; display: flex; align-items: center; justify-content: center; padding: 20px; border-right: 1px solid var(--border); }
+        .modal-left img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .modal-right { flex: 1.2; display: flex; flex-direction: column; position: relative; }
+        .selection-area { padding: 30px; flex: 1; overflow-y: auto; }
+        
+        #next-steps { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: white; z-index: 3000; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+        .next-btn { width: 100%; max-width: 300px; padding: 15px; margin: 10px 0; border: 1px solid #ddd; background: var(--fawz-grey); cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        .next-btn.primary { background: var(--fawz-red); color: white; border: none; }
+
+        label { display: block; margin: 15px 0 5px; font-weight: bold; color: #555; font-size: 0.75em; text-transform: uppercase; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; background: var(--fawz-grey); }
+        .info-tag { display: inline-block; background: #eee; padding: 4px 10px; border-radius: 4px; font-size: 0.8em; margin-bottom: 10px; color: #666; }
+
+        .site-option-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; margin-top: 10px; }
+        .site-option-item { border: 1px solid #ddd; padding: 8px; text-align: center; border-radius: 4px; cursor: pointer; font-size: 0.8em; transition: 0.2s; }
+        .site-option-item.selected { border-color: var(--fawz-red); background: #fff1f1; font-weight: bold; }
+        .color-swatch { width: 25px; height: 25px; border-radius: 50%; margin: 0 auto 5px; border: 1px solid rgba(0,0,0,0.1); }
+        
+        .btn-add { width: 100%; background: var(--fawz-red); border: none; padding: 18px; color: white; font-weight: 800; text-transform: uppercase; cursor: pointer; margin-top: 20px; }
+        .close-x { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #bbb; z-index: 3100; }
+    </style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+<body>
+
+<header>
+    <h1>Fawz <span>Haberdashery</span></h1>
+    <nav><a href="home.html">Home</a><a href="cart.html">View Cart</a></nav>
+</header>
+
+<div class="section">
+    <h3>Draw Cords</h3>
+    <div class="grid">
+        <div class="card" onclick="openModal('Standard Draw Cord', 'standard', 'tpl-standard')">
+            <img src="images/drawCords/drawCords.webp" onerror="this.src='https://via.placeholder.com/300x250?text=Standard+Cord'">
+            <strong>Standard Draw Cord</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Tipped Draw Cords', 'tipped', 'tpl-tipped')">
+            <img src="images/drawCords/tippedDrawCords.webp" onerror="this.src='https://via.placeholder.com/300x250?text=Tipped+Cord'">
+            <strong>Tipped Draw Cords</strong>
+        </div>
+    </div>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-x" onclick="closeModal()">&times;</span>
+        <div class="modal-left"><img id="modal-img" src=""></div>
+        <div class="modal-right">
+            <div class="selection-area">
+                <h2 id="modal-title" style="color:var(--fawz-red); text-transform:uppercase;">Product</h2>
+                <div id="dynamic-options"></div>
+                <label>Quantity</label>
+                <input type="number" id="qty" value="1" min="1">
+                <button class="btn-add" onclick="addToCart()">Add to Cart</button>
+            </div>
+            <div id="next-steps">
+                <h2 style="color:var(--fawz-red)">Added to Cart!</h2>
+                <p>What would you like to do next?</p>
+                <button class="next-btn primary" onclick="resetForNewColor()">Choose Different Color</button>
+                <button class="next-btn" onclick="resetForNewSize()">Choose New Size/Length</button>
+                <button class="next-btn" onclick="location.href='home.html'">Back to Home</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- STANDARD DRAW CORDS TEMPLATE -->
+<template id="tpl-standard">
+    <label>Size / Length</label>
+    <select id="opt-size" onchange="updateImageBySize()">
+        <option value="5mm">5mm</option>
+        <option value="6mm">6mm</option>
+    </select>
+    <label>Select Color</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'White')"><div class="color-swatch" style="background:#fff"></div>White</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Black')"><div class="color-swatch" style="background:#000"></div>Black</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Cream')"><div class="color-swatch" style="background:#FFFDD0"></div>Cream</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Red')"><div class="color-swatch" style="background:red"></div>Red</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Navy')"><div class="color-swatch" style="background:#000080"></div>Navy</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Yellow')"><div class="color-swatch" style="background:yellow"></div>Yellow</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Orange')"><div class="color-swatch" style="background:orange"></div>Orange</div>
+         <div class="site-option-item" onclick="selectOption(this, 'Brown')"><div class="color-swatch" style="background:#A52A2A"></div>Brown</div>
+          <div class="site-option-item" onclick="selectOption(this, 'Maroon')"><div class="color-swatch" style="background:#800000"></div>Maroon</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Bottle')"><div class="color-swatch" style="background:#006A4E"></div>Bottle</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Gold')"><div class="color-swatch" style="background:gold"></div>Gold</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Royal')"><div class="color-swatch" style="background:#4169E1"></div>Royal</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Powder')"><div class="color-swatch" style="background:#B0E0E6"></div>Powder</div>
+    </div>
+</template>
+
+<!-- TIPPED DRAW CORDS TEMPLATE -->
+<template id="tpl-tipped">
+    <div class="info-tag">Tip Length: 20mm</div>
+    <label>Choose Length</label>
+    <select id="opt-size" onchange="updateImageBySize()">
+        <option value="1m">1.0 Metre</option>
+        <option value="1.3m">1.3 Metre</option>
+        <option value="1.6m">1.6 Metre</option>
+    </select>
+    <label>Select Color</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'White')"><div class="color-swatch" style="background:#fff"></div>White</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Black')"><div class="color-swatch" style="background:#000"></div>Black</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Navy')"><div class="color-swatch" style="background:#000080"></div>Navy</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Red')"><div class="color-swatch" style="background:red"></div>Red</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Royal')"><div class="color-swatch" style="background:#4169E1"></div>Royal</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Powder')"><div class="color-swatch" style="background:#B0E0E6"></div>Powder</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Gold')"><div class="color-swatch" style="background:gold"></div>Gold</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Emerald')"><div class="color-swatch" style="background:#50C878"></div>Emerald</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Bottle')"><div class="color-swatch" style="background:#006A4E"></div>Bottle</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Grey')"><div class="color-swatch" style="background:#808080"></div>Grey</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Beige')"><div class="color-swatch" style="background:#F5F5DC"></div>Beige</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Brown')"><div class="color-swatch" style="background:#8B4513"></div>Brown</div>
+    </div>
+</template>
+
+<script>
+    let currentCategory = "";
+    let categorySlug = ""; 
+    let selectedOptionVal = "";
+
+    function openModal(category, slug, tplId){
+        currentCategory = category;
+        categorySlug = slug;
+        selectedOptionVal = "";
+        document.getElementById("modal-title").textContent = category;
+        document.getElementById("next-steps").style.display = "none";
+        
+        const optionsDiv = document.getElementById("dynamic-options");
+        optionsDiv.innerHTML = "";
+        const tpl = document.getElementById(tplId);
+        if(tpl) optionsDiv.appendChild(tpl.content.cloneNode(true));
+
+        updateImageBySize();
+        document.getElementById("modal").style.display = "block";
+    }
+
+    function updateImageBySize() {
+        const sizeEl = document.getElementById("opt-size");
+        const sizeValue = sizeEl ? sizeEl.value : "default";
+        const modalImg = document.getElementById("modal-img");
+        modalImg.src = `images/drawcords/${categorySlug}/${sizeValue}.jpg`;
+        modalImg.onerror = function() {
+            this.src = `https://via.placeholder.com/400?text=${currentCategory}+${sizeValue}`;
+        };
+    }
+
+    function selectOption(el, val) {
+        selectedOptionVal = val;
+        el.parentElement.querySelectorAll('.site-option-item').forEach(i => i.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    function closeModal() { document.getElementById("modal").style.display = "none"; }
+
+    function addToCart() {
+        const size = document.getElementById("opt-size") ? document.getElementById("opt-size").value : "Standard";
+        const qty = document.getElementById("qty").value;
+        
+        if(!selectedOptionVal) {
+            alert("Please select a color first!");
+            return;
+        }
+
+        const fullSelection = `${currentCategory} (${size}) - ${selectedOptionVal}`;
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.push({ item: fullSelection, qty: qty });
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        document.getElementById("next-steps").style.display = "flex";
+    }
+
+    function resetForNewColor() {
+        document.getElementById("next-steps").style.display = "none";
+        document.querySelectorAll('.site-option-item').forEach(i => i.classList.remove('selected'));
+        selectedOptionVal = "";
+    }
+
+    function resetForNewSize() {
+        document.getElementById("next-steps").style.display = "none";
+        const sizeSelect = document.getElementById("opt-size");
+        if(sizeSelect) {
+            sizeSelect.selectedIndex = 0;
+            updateImageBySize();
+        }
+        resetForNewColor();
+    }
+
+    window.onclick = e => { if(e.target == document.getElementById("modal")) closeModal(); }
+</script>
+</body>
+</html>

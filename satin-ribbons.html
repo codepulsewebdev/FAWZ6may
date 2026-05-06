@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Satin Ribbons | Fawz Haberdashery</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{--ink:#1a1a2e;--gold:#c5a059;--gold-dark:#a07030;--gold-light:#f5e6c0;--off:#f7f4ef;--shadow:0 8px 30px rgba(0,0,0,0.10);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f5f6f8;background-image:url('background.png');background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:fixed;min-height:100vh;}
+
+/* HEADER */
+header{background:rgba(18,18,18,0.93);backdrop-filter:blur(10px);color:white;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:999;border-bottom:2px solid var(--gold);}
+.header-brand{color:var(--gold);font-size:1.15em;letter-spacing:1px;font-weight:700;}
+nav{display:flex;gap:6px;align-items:center;}
+nav a{color:white;padding:7px 14px;text-decoration:none;font-weight:600;border-radius:20px;transition:all 0.2s;font-size:0.85em;border:1px solid transparent;}
+nav a.back-btn{border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);}
+nav a.back-btn:hover{border-color:var(--gold);color:var(--gold);}
+nav a:hover{background:rgba(255,255,255,0.12);}
+nav a.cart-link{background:var(--gold);color:#1a0000;border-color:var(--gold);position:relative;}
+nav a.cart-link:hover{background:var(--gold-dark);}
+.cart-badge{position:absolute;top:-7px;right:-7px;background:#e60000;color:white;font-size:0.65em;font-weight:900;width:19px;height:19px;border-radius:50%;display:none;align-items:center;justify-content:center;border:2px solid rgba(18,18,18,0.93);}
+.cart-badge.visible{display:flex;}
+
+/* BREADCRUMB */
+.breadcrumb{padding:10px 20px;font-size:0.8em;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.35);display:flex;align-items:center;gap:6px;}
+.breadcrumb a{color:var(--gold);text-decoration:none;}
+.breadcrumb a:hover{text-decoration:underline;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0d0d1a,#2a1a0a,#0d0d1a);color:white;text-align:center;padding:38px 20px 28px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(197,160,89,0.04) 0,rgba(197,160,89,0.04) 1px,transparent 1px,transparent 22px);}
+.hero h1{font-size:clamp(1.8em,5vw,2.8em);letter-spacing:3px;text-transform:uppercase;position:relative;z-index:1;margin-bottom:8px;}
+.hero h1 span{color:var(--gold);}
+.hero p{color:rgba(255,255,255,0.62);font-size:0.88em;position:relative;z-index:1;}
+
+/* SIZE STRIP */
+.size-strip{background:white;padding:20px 10px;text-align:center;border-bottom:3px solid #efefef;}
+.size-strip h3{font-size:0.7em;text-transform:uppercase;letter-spacing:3px;color:#bbb;margin-bottom:16px;}
+.size-buttons{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:0 4px;}
+.size-btn{border:2px solid #e5ddd0;background:var(--off);border-radius:10px;padding:9px 6px 7px;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;min-width:52px;width:52px;font-family:inherit;flex-shrink:0;}
+.size-btn:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 6px 15px rgba(197,160,89,0.25);}
+.size-btn.active{border-color:var(--gold);background:var(--gold-light);box-shadow:0 6px 20px rgba(197,160,89,0.35);}
+.rib-vis{width:var(--rw,8px);height:28px;background:linear-gradient(180deg,#c8a96a,#8a6520);border-radius:3px;margin-bottom:6px;box-shadow:2px 2px 5px rgba(0,0,0,0.15);}
+.slbl{font-weight:800;font-size:0.9em;color:#333;}
+.size-btn.active .slbl{color:var(--gold-dark);}
+.sprice{font-size:0.68em;color:var(--gold-dark);font-weight:700;margin-top:2px;}
+
+/* MAIN LAYOUT - fixed left panel width to fit all 7 ribbons perfectly */
+.main-layout{max-width:1100px;margin:25px auto;padding:0 15px;display:grid;grid-template-columns:340px 1fr;gap:25px;align-items:start;} /* increased left panel to 340px */
+@media(max-width:900px){.main-layout{grid-template-columns:1fr;}} /* stack on smaller screens */
+
+/* VISUAL PANEL - no scroll, all ribbons visible */
+.visual-panel{background:white;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;position:sticky;top:75px;}
+@media(max-width:900px){.visual-panel{position:static;}}
+.vis-inner{padding:20px 10px;text-align:center;}
+.ribbon-showcase{display:flex;align-items:flex-end;justify-content:space-between;gap:5px;height:210px;padding:10px 5px;background:linear-gradient(180deg,#f9f6f0,#f0ece3);border-radius:12px;margin-bottom:15px;overflow:hidden;} /* overflow hidden removed scroll */
+.rv-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all 0.3s;flex:0 1 auto;min-width:0;width:100%;max-width:42px;} /* fixed max-width, all equal base */
+.rv-item:hover{transform:translateY(-7px);}
+.rv-item.active{transform:translateY(-14px);}
+.rbar{border-radius:4px;background:linear-gradient(180deg,#c8a96a,#7a5515);box-shadow:3px 3px 8px rgba(0,0,0,0.18);transition:all 0.3s;position:relative;overflow:hidden;width:100%;}
+.rbar::after{content:'';position:absolute;top:0;left:20%;width:20%;height:100%;background:rgba(255,255,255,0.18);}
+.rv-item.active .rbar{box-shadow:4px 4px 18px rgba(197,160,89,0.45);}
+.rtag{font-size:0.7em;font-weight:700;color:#666;text-transform:uppercase;margin-top:2px;white-space:nowrap;} /* no wrap, slightly larger */
+.rv-item.active .rtag{color:var(--gold-dark);font-weight:900;}
+
+.sel-info{background:var(--off);border:2px solid #e5ddd0;border-radius:12px;padding:12px;min-height:55px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.sel-size-lbl{font-size:1.8em;font-weight:900;color:var(--gold-dark);}
+.sel-color-row{display:flex;align-items:center;gap:7px;margin-top:5px;justify-content:center;}
+.sel-swatch-circle{width:24px;height:24px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+.sel-cname{font-weight:700;font-size:0.88em;color:#555;}
+.sel-price-lbl{font-size:0.9em;color:var(--gold-dark);font-weight:700;margin-top:5px;}
+
+/* ORDER PANEL */
+.order-panel{background:white;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;}
+.panel-hdr{background:linear-gradient(135deg,var(--ink),#2a1a0a);color:white;padding:18px 22px;border-bottom:3px solid var(--gold);}
+.panel-hdr h2{font-size:1.15em;margin-bottom:3px;color:var(--gold);}
+.panel-hdr p{font-size:0.8em;opacity:0.7;}
+.panel-body{padding:22px;}
+
+/* Steps */
+.step-ind-row{display:flex;margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid #e5ddd0;}
+.sind{flex:1;padding:8px;text-align:center;font-size:0.72em;font-weight:700;background:#f5f5f5;color:#aaa;transition:all 0.3s;}
+.sind.done{background:#fdf3e0;color:#7a5c1e;}
+.sind.current{background:var(--gold);color:#1a0000;}
+
+/* COLOR GRID */
+.clbl{font-size:0.7em;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#bbb;margin-bottom:12px;}
+.color-grid-new{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:20px;}
+@media(max-width:500px){.color-grid-new{grid-template-columns:repeat(4,1fr);}}
+@media(max-width:380px){.color-grid-new{grid-template-columns:repeat(3,1fr);}}
+.color-chip{display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 3px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all 0.2s;background:#fafafa;}
+.color-chip:hover{border-color:#ddd;transform:scale(1.06);}
+.color-chip.active{border-color:var(--gold);background:var(--gold-light);box-shadow:0 3px 10px rgba(197,160,89,0.25);}
+.chip-circle{width:28px;height:28px;border-radius:50%;border:3px solid rgba(0,0,0,0.07);box-shadow:0 2px 5px rgba(0,0,0,0.1);flex-shrink:0;}
+.chip-label{font-size:0.58em;font-weight:700;text-transform:uppercase;text-align:center;color:#666;line-height:1.2;}
+.color-chip.active .chip-label{color:var(--gold-dark);}
+
+/* Qty */
+.qty-lbl{font-size:0.7em;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#bbb;margin-bottom:10px;display:block;}
+.qty-row{display:flex;align-items:center;gap:15px;flex-wrap:wrap;}
+.qty-control{display:flex;align-items:center;border:2px solid #e5ddd0;border-radius:10px;overflow:hidden;}
+.qty-btn{width:44px;height:44px;border:none;background:var(--off);font-size:1.3em;cursor:pointer;transition:background 0.2s;font-weight:300;color:#555;font-family:inherit;}
+.qty-btn:hover{background:#e8e0d0;}
+#qty{width:60px;height:44px;border:none;border-left:2px solid #e5ddd0;border-right:2px solid #e5ddd0;text-align:center;font-size:1.1em;font-weight:700;outline:none;background:white;color:#222;font-family:inherit;}
+
+.price-tag{display:inline-flex;align-items:baseline;gap:3px;background:linear-gradient(135deg,#fdf3e0,#f5e6c0);border:1px solid #e8c97a;border-radius:10px;padding:8px 13px;}
+.price-tag .cur{font-size:0.82em;color:#7a5c1e;font-weight:700;}
+.price-tag .amt{font-size:1.7em;font-weight:900;color:#5c4010;}
+.price-tag .per{font-size:0.68em;color:#a07030;}
+.total-line{margin-top:8px;font-size:0.85em;color:#aaa;}
+.total-line strong{color:#7a5c1e;}
+
+.add-btn-new{width:100%;padding:14px;background:linear-gradient(135deg,var(--ink),#2a1a0a);color:white;border:none;border-radius:12px;font-size:1em;font-weight:800;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.3s;box-shadow:0 4px 15px rgba(26,26,46,0.22);margin-top:14px;font-family:inherit;border-top:2px solid var(--gold);}
+.add-btn-new:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(26,26,46,0.32);}
+
+/* Success */
+.success-box{background:linear-gradient(135deg,#fdf3e0,#fffdf7);border:2px solid var(--gold);border-radius:14px;padding:22px;text-align:center;}
+.success-box .chk{font-size:2.5em;margin-bottom:8px;}
+.success-box h3{color:#5c4010;font-size:1.15em;margin-bottom:6px;}
+.success-box p{color:#888;font-size:0.86em;margin-bottom:18px;}
+.suc-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:400px){.suc-actions{grid-template-columns:1fr;}}
+@media(max-width:600px){
+    header{padding:10px 14px;}
+    .header-brand{font-size:0.92em;}
+    nav a{padding:6px 10px;font-size:0.78em;}
+    .hero{min-height:180px;}
+    .hero h1{font-size:1.8em;letter-spacing:1px;}
+    .size-strip{padding:14px 8px;}
+    .size-btn{min-width:44px;width:44px;padding:8px 4px 6px;}
+    .main-layout{margin:16px auto;padding:0 10px;gap:16px;}
+    .panel-body{padding:16px 14px;}
+    .color-grid-new{grid-template-columns:repeat(4,1fr);}
+    footer > div > div:first-child{grid-template-columns:1fr !important;}
+    footer{padding:28px 5% 18px !important;}
+    .breadcrumb{padding:8px 14px;font-size:0.75em;}
+}
+.suc-btn{padding:11px;border:2px solid #e5ddd0;background:white;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.82em;color:#444;transition:all 0.2s;font-family:inherit;}
+.suc-btn:hover{border-color:var(--gold);color:var(--gold-dark);}
+.suc-btn.primary{background:var(--ink);color:white;border-color:var(--ink);grid-column:1/-1;border-top:2px solid var(--gold);}
+.suc-btn.primary:hover{background:#2a1a0a;}
+
+.hidden{display:none;}
+
+</style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+<body>
+
+<header>
+    <div class="header-brand" style="display:flex;align-items:center;gap:8px;"><img src="data:image/jpeg;base64,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" alt="Fawz" style="height:36px;width:auto;border-radius:4px;"> Fawz Haberdashery</div>
+    <nav>
+        <a href="home.html" class="back-btn">← Back to Shop</a>
+        <a href="demo_cart.html" class="cart-link" id="cartNavBtn">
+            🛒 Cart
+            <span class="cart-badge" id="cartBadge">0</span>
+        </a>
+    </nav>
+</header>
+
+<div class="breadcrumb">
+    <a href="home.html">Home</a>
+    <span style="opacity:0.4;">›</span>
+    <a href="home.html#product-showcase">Shop</a>
+    <span style="opacity:0.4;">›</span>
+    <span style="color:rgba(255,255,255,0.85);">Satin Ribbons</span>
+</div>
+
+<div class="hero">
+    <h1>Satin <span>Ribbons</span></h1>
+    <p>Premium quality · 7 widths (3mm–50mm) · 32 colours · Wholesale pricing</p>
+</div>
+
+<div class="size-strip">
+    <h3>Step 1 — Select a Width</h3>
+    <div class="size-buttons">
+        <button class="size-btn" data-size="3mm" data-price="5" onclick="selectSizeBtn(this)">
+            <div class="rib-vis" style="--rw:6px;"></div><span class="slbl">3mm</span><span class="sprice">R5/roll</span>
+        </button>
+        <button class="size-btn" data-size="6mm" data-price="7" onclick="selectSizeBtn(this)">
+            <div class="rib-vis" style="--rw:10px;"></div><span class="slbl">6mm</span><span class="sprice">R7/roll</span>
+        </button>
+        <button class="size-btn" data-size="9mm" data-price="9" onclick="selectSizeBtn(this)">
+            <div class="rib-vis" style="--rw:14px;"></div><span class="slbl">9mm</span><span class="sprice">R9/roll</span>
+        </button>
+        <button class="size-btn" data-size="15mm" data-price="12" onclick="selectSizeBtn(this)">
+            <div class="rib-vis" style="--rw:20px;"></div><span class="slbl">15mm</span><span class="sprice">R12/roll</span>
+        </button>
+        <button class="size-btn" data-size="25mm" data-price="16" onclick="selectSizeBtn(this)">
+            <div class="rib-vis" style="--rw:28px;"></div><span class="slbl">25mm</span><span class="sprice">R16/roll</span>
+        </button>
+        <button class="size-btn" data-size="38mm" data-price="22" onclick="selectSizeBtn(this)">
+            <div class="rib-vis" style="--rw:36px;"></div><span class="slbl">38mm</span><span class="sprice">R22/roll</span>
+        </button>
+        <button class="size-btn" data-size="50mm" data-price="28" onclick="selectSizeBtn(this)">
+            <div class="rib-vis" style="--rw:45px;"></div><span class="slbl">50mm</span><span class="sprice">R28/roll</span>
+        </button>
+    </div>
+</div>
+
+<div class="main-layout">
+    <!-- VISUAL PANEL - all seven ribbons fit, 50mm fully visible -->
+    <div class="visual-panel">
+        <div class="vis-inner">
+            <div class="ribbon-showcase">
+                <div class="rv-item" data-size="3mm" onclick="selectSizeVis(this)"><div class="rbar" style="width:100%;height:90px;"></div><span class="rtag">3mm</span></div>
+                <div class="rv-item" data-size="6mm" onclick="selectSizeVis(this)"><div class="rbar" style="width:100%;height:115px;"></div><span class="rtag">6mm</span></div>
+                <div class="rv-item" data-size="9mm" onclick="selectSizeVis(this)"><div class="rbar" style="width:100%;height:130px;"></div><span class="rtag">9mm</span></div>
+                <div class="rv-item" data-size="15mm" onclick="selectSizeVis(this)"><div class="rbar" style="width:100%;height:145px;"></div><span class="rtag">15mm</span></div>
+                <div class="rv-item" data-size="25mm" onclick="selectSizeVis(this)"><div class="rbar" style="width:100%;height:160px;"></div><span class="rtag">25mm</span></div>
+                <div class="rv-item" data-size="38mm" onclick="selectSizeVis(this)"><div class="rbar" style="width:100%;height:175px;"></div><span class="rtag">38mm</span></div>
+                <div class="rv-item" data-size="50mm" onclick="selectSizeVis(this)"><div class="rbar" style="width:100%;height:190px;"></div><span class="rtag">50mm</span></div>
+            </div>
+            <div class="sel-info" id="selInfo">
+                <!-- ============================================== -->
+                <!-- SELECTED RIBBON IMAGE PREVIEW                  -->
+                <!-- If you wish to use real photos instead of CSS  -->
+                <!-- ribbons, add an <img> tag here.                -->
+                <!-- ============================================== -->
+                <div style="color:#ccc;font-size:0.82em;">Select a size &amp; colour to preview</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ORDER PANEL -->
+    <div class="order-panel">
+        <div class="panel-hdr">
+            <h2>Build Your Order</h2>
+            <p>Pick width → colour → quantity → add to cart</p>
+        </div>
+        <div class="panel-body">
+            <div class="step-ind-row">
+                <div class="sind current" id="ind1">① Size</div>
+                <div class="sind" id="ind2">② Colour</div>
+                <div class="sind" id="ind3">③ Qty</div>
+            </div>
+
+            <div id="step-2" class="hidden">
+                <div class="clbl">Step 2 — Pick a Colour</div>
+                <div class="color-grid-new" id="color-grid"></div>
+
+                <div id="step-3" class="hidden">
+                    <span class="qty-lbl">Step 3 — Quantity (rolls)</span>
+                    <div class="qty-row">
+                        <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+                            <input type="number" id="qty" value="1" min="1" readonly>
+                            <button class="qty-btn" onclick="changeQty(1)">+</button>
+                        </div>
+                        <div class="price-tag">
+                            <span class="cur">R</span>
+                            <span class="amt" id="priceAmt">—</span>
+                            <span class="per">/ roll</span>
+                        </div>
+                    </div>
+                    <div class="total-line">Total: <strong id="totalPrice">—</strong></div>
+                    <button class="add-btn-new" onclick="addToCart()">🛒 ADD TO CART</button>
+                </div>
+            </div>
+
+            <div id="keep-shopping" class="success-box hidden">
+                <div class="chk">✅</div>
+                <h3>Added to Cart!</h3>
+                <p id="successDesc"></p>
+                <div class="suc-actions">
+                    <button class="suc-btn" onclick="resetForSameSize()">More of this size</button>
+                    <button class="suc-btn" onclick="resetForNewSize()">Different size</button>
+                    <button class="suc-btn primary" onclick="window.location.href='demo_cart.html'">🛒 View Cart &amp; Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// Tier pricing: base + (tier-1)*5
+const BASE_RIBBON_PRICES = {"3mm":5,"6mm":7,"9mm":9,"15mm":12,"25mm":16,"38mm":22,"50mm":28};
+const tier = parseInt(sessionStorage.getItem("fawz_tier") || "1");
+
+const tierAdd = (tier - 1) * 5;
+const ribbonPrices = {};
+for(const [k,v] of Object.entries(BASE_RIBBON_PRICES)) ribbonPrices[k] = v + tierAdd;
+
+// Update size button displayed prices
+document.querySelectorAll('.size-btn').forEach(btn => {
+  const sz = btn.getAttribute('data-size');
+  if(ribbonPrices[sz]) {
+    btn.setAttribute('data-price', ribbonPrices[sz]);
+    const sp = btn.querySelector('.sprice');
+    if(sp) sp.textContent = 'R' + ribbonPrices[sz] + '/roll';
+  }
+});
+// Set initial price display to first size
+const firstSize = '3mm';
+document.getElementById('priceAmt').textContent = ribbonPrices[firstSize];
+document.getElementById('totalPrice').textContent = 'R' + ribbonPrices[firstSize];
+
+const ribbonColors = [
+    {name:"White",hex:"#FFFFFF"},{name:"Red",hex:"#C02026"},{name:"Cream",hex:"#FFFDD0"},
+    {name:"Black",hex:"#000000"},{name:"Powder",hex:"#B0C4DE"},{name:"Royal",hex:"#002366"},
+    {name:"Navy",hex:"#000080"},{name:"Copper",hex:"#B87333"},{name:"Lt Brown",hex:"#A57164"},
+    {name:"Dk Brown",hex:"#3D2B1F"},{name:"Bronze",hex:"#CD7F32"},{name:"Dusty",hex:"#AC716C"},
+    {name:"Maroon",hex:"#800000"},{name:"Turo",hex:"#008080"},{name:"Lime",hex:"#0088CC"},
+    {name:"Metallic Gold",hex:"#D4AF37"},{name:"Peach",hex:"#FFDAB9"},{name:"Old Gold",hex:"#CFB53B"},
+    {name:"Gold Doi",hex:"#FFD700"},{name:"Gold",hex:"#FFD700"},{name:"Mint",hex:"#98FF98"},
+    {name:"Olive",hex:"#808000"},{name:"Bottle",hex:"#006A4E"},{name:"Emerald",hex:"#50C878"},
+    {name:"Lilac",hex:"#C8A2C8"},{name:"Purple",hex:"#800080"},{name:"Pink",hex:"#FFC0CB"},
+    {name:"Yellow",hex:"#FFF700"},{name:"Lt Grey",hex:"#D3D3D3"},{name:"Dk Grey",hex:"#5A5A5A"},
+    {name:"Cerise",hex:"#DE3163"},{name:"Metallic Silver",hex:"#C0C0C0"}
+];
+
+// Build colour grid
+const grid = document.getElementById('color-grid');
+ribbonColors.forEach(color => {
+    const chip = document.createElement('div');
+    chip.className = 'color-chip';
+    chip.onclick = function(){ selectColor(color.name, color.hex, this); };
+    chip.innerHTML = `<div class="chip-circle" style="background:${color.hex};"></div><span class="chip-label">${color.name}</span>`;
+    grid.appendChild(chip);
+});
+
+let selectedColor = "", selectedColorHex = "", selectedSize = "";
+
+function updateCartBadge() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const badge = document.getElementById('cartBadge');
+    if(cart.length > 0){ badge.textContent = cart.length; badge.classList.add('visible'); }
+    else { badge.classList.remove('visible'); }
+}
+updateCartBadge();
+
+function selectSizeBtn(btn) {
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedSize = btn.dataset.size;
+    document.querySelectorAll('.rv-item').forEach(v => v.classList.toggle('active', v.dataset.size === selectedSize));
+    document.getElementById('step-2').classList.remove('hidden');
+    document.getElementById('keep-shopping').classList.add('hidden');
+    document.getElementById('ind1').className = 'sind done';
+    document.getElementById('ind2').className = 'sind current';
+    document.getElementById('ind3').className = 'sind';
+    updatePrice(); updateSelInfo();
+}
+
+function selectSizeVis(el) {
+    const btn = document.querySelector(`.size-btn[data-size="${el.dataset.size}"]`);
+    if(btn) selectSizeBtn(btn);
+}
+
+function selectColor(name, hex, el) {
+    selectedColor = name; selectedColorHex = hex;
+    document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('step-3').classList.remove('hidden');
+    document.getElementById('ind2').className = 'sind done';
+    document.getElementById('ind3').className = 'sind current';
+    document.querySelectorAll('.rbar').forEach(rb => {
+        const dark = (hex === '#FFFFFF') ? '#cccccc' : (hex === '#FFF700') ? '#b8a000' : hex;
+        rb.style.background = `linear-gradient(180deg,${hex},${dark})`;
+    });
+    updatePrice(); updateSelInfo();
+}
+
+function changeQty(d) {
+    const inp = document.getElementById('qty');
+    let v = parseInt(inp.value) + d;
+    if(v < 1) v = 1;
+    inp.value = v;
+    updatePrice();
+}
+
+function updatePrice() {
+    if(!selectedSize) return;
+    const p = ribbonPrices[selectedSize];
+    const q = parseInt(document.getElementById('qty').value) || 1;
+    document.getElementById('priceAmt').textContent = p;
+    document.getElementById('totalPrice').textContent = 'R' + (p * q);
+}
+
+function updateSelInfo() {
+    const el = document.getElementById('selInfo');
+    if(!selectedSize){ el.innerHTML='<div style="color:#ccc;font-size:0.82em;">Select a size &amp; colour to preview</div>'; return; }
+    el.innerHTML = `
+        <!-- ============================================== -->
+        <!-- SELECTED RIBBON IMAGE PREVIEW                  -->
+        <!-- You can inject a dynamic <img> here using JS   -->
+        <!-- ============================================== -->
+        <div class="sel-size-lbl">${selectedSize}</div>
+        ${selectedColor ? `<div class="sel-color-row">
+            <div class="sel-swatch-circle" style="background:${selectedColorHex};"></div>
+            <span class="sel-cname">${selectedColor}</span>
+        </div>` : ''}
+        <div class="sel-price-lbl">R${ribbonPrices[selectedSize]} per roll</div>
+    `;
+}
+
+/* CART LOGIC */
+function addToCart() {
+    if(!selectedColor){ alert("Please select a colour first!"); return; }
+    const price = ribbonPrices[selectedSize];
+    const qty = parseInt(document.getElementById("qty").value);
+    const item = {
+        product: 'Satin Ribbon',
+        size: selectedSize,
+        color: selectedColor,
+        qty: qty,
+        unitPrice: price,
+        lineTotal: price * qty
+    };
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cart.push(item);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    document.getElementById("step-2").classList.add("hidden");
+    document.getElementById("keep-shopping").classList.remove("hidden");
+    document.getElementById("successDesc").textContent = qty + "× " + selectedSize + " " + selectedColor + " — R" + price + "/roll · Total: R" + (price * qty);
+    document.getElementById('ind3').className = 'sind done';
+    document.getElementById('qty').value = 1;
+    updatePrice();
+    updateCartBadge();
+}
+
+function resetForSameSize() {
+    selectedColor = ""; selectedColorHex = "";
+    document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
+    document.getElementById("qty").value = 1;
+    document.getElementById("step-3").classList.add("hidden");
+    document.getElementById("step-2").classList.remove("hidden");
+    document.getElementById("keep-shopping").classList.add("hidden");
+    document.getElementById('ind2').className = 'sind current';
+    document.getElementById('ind3').className = 'sind';
+    updatePrice();
+    updateSelInfo();
+}
+
+function resetForNewSize() {
+    selectedColor = ""; selectedColorHex = ""; selectedSize = "";
+    document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.rv-item').forEach(v => v.classList.remove('active'));
+    document.getElementById("qty").value = 1;
+    document.getElementById("step-2").classList.add("hidden");
+    document.getElementById("step-3").classList.add("hidden");
+    document.getElementById("keep-shopping").classList.add("hidden");
+    document.getElementById('ind1').className = 'sind current';
+    document.getElementById('ind2').className = 'sind';
+    document.getElementById('ind3').className = 'sind';
+    updatePrice();
+    updateSelInfo();
+}
+</script>
+
+<!-- FOOTER -->
+
+
+
+<!-- FOOTER -->
+
+
+
+<!-- FOOTER -->
+
+
+
+<!-- FOOTER -->
+<footer style="background:rgba(10,10,15,0.97); border-top:2px solid #c5a059; padding:40px 5% 25px; color:rgba(255,255,255,0.6);">
+    <div style="max-width:1100px; margin:0 auto;">
+        <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:30px; margin-bottom:30px;">
+            <div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                    <img src="data:image/jpeg;base64,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" alt="Fawz Logo" style="height:42px;width:auto;border-radius:6px;">
+                    <div style="font-size:1.2em; font-weight:800; color:#c5a059;">Fawz Haberdashery</div>
+                </div>
+                <p style="font-size:0.85em; line-height:1.7;">Your trusted wholesale haberdashery supplier. Premium quality ribbons, laces, zippers, buttons &amp; more — all at unbeatable South African wholesale prices.</p>
+            </div>
+            <div>
+                <div style="font-weight:700; color:rgba(255,255,255,0.85); margin-bottom:12px; font-size:0.9em; text-transform:uppercase; letter-spacing:1px;">Quick Links</div>
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:0.85em;">
+                    <a href="home.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Home</a>
+                    <a href="satin-ribbons.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Satin Ribbons</a>
+                    <a href="nylon-lace.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Nylon Lace</a>
+                    <a href="demo_cart.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Cart</a>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight:700; color:rgba(255,255,255,0.85); margin-bottom:12px; font-size:0.9em; text-transform:uppercase; letter-spacing:1px;">Contact</div>
+                <div style="font-size:0.85em; line-height:2; color:rgba(255,255,255,0.55);">
+                    📍 45 Azure Road, Lenasia<br>
+                    📞 <a href="tel:0118520061" style="color:rgba(255,255,255,0.55); text-decoration:none;">011 852 0061</a><br>
+                    🕐 Mon–Thu: 8:30am–3:30pm<br>
+                    🕐 Fri: 8:30am–12pm
+                </div>
+            </div>
+        </div>
+        <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:20px; text-align:center; font-size:0.78em;">
+            © 2026 Fawz Haberdashery · All rights reserved · <span style="color:rgba(197,160,89,0.7);">Made by Codepulse Web Dev</span>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

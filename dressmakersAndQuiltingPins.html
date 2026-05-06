@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pins & Fasteners | Fawz Haberdashery</title>
+
+    <style>
+        :root { 
+            --fawz-red: #e31e24; 
+            --fawz-dark: #1a1a1a; 
+            --fawz-grey: #f8f8f8;
+            --border: #eeeeee;
+        }
+
+        body { margin: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; background: #ffffff; color: var(--fawz-dark); }
+        header { position: sticky; top: 0; background: #ffffff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--fawz-red); box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000; }
+        header h1 { color: var(--fawz-dark); font-size: 1.4em; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        header h1 span { color: var(--fawz-red); }
+        nav a { color: var(--fawz-dark); margin-left: 20px; text-decoration: none; font-weight: 700; font-size: 0.9em; }
+
+        .section { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
+        .section h3 { text-align: center; color: var(--fawz-dark); font-size: 2.2em; margin-bottom: 50px; text-transform: uppercase; }
+        .section h3::after { content: ''; display: block; width: 60px; height: 4px; background: var(--fawz-red); margin: 10px auto; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .card { background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: var(--fawz-red); transform: translateY(-5px); }
+        .card img { width: 100%; height: 220px; object-fit: contain; margin-bottom: 15px; }
+        .card strong { display: block; color: var(--fawz-dark); font-size: 1.1em; text-transform: uppercase; }
+
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
+        .modal-content { background: white; margin: 5vh auto; width: 95%; max-width: 1100px; height: 85vh; display: flex; border-radius: 12px; overflow: hidden; position: relative; }
+        .modal-left { flex: 1; background: #fff; display: flex; align-items: center; justify-content: center; padding: 40px; border-right: 1px solid var(--border); }
+        .modal-left img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .modal-right { flex: 1.2; display: flex; flex-direction: column; background: #fff; }
+        .selection-area { padding: 40px; flex: 1; overflow-y: auto; }
+        .selection-area h2 { color: var(--fawz-red); margin: 0 0 20px; text-transform: uppercase; font-size: 1.8em; }
+
+        label { display: block; margin: 20px 0 8px; font-weight: bold; color: #555; font-size: 0.75em; text-transform: uppercase; }
+        select, input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 4px; background: var(--fawz-grey); }
+        #price { font-size: 2.2em; font-weight: 900; color: var(--fawz-dark); margin: 25px 0; }
+        .btn-add { width: 100%; background: var(--fawz-red); border: none; padding: 20px; color: white; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+        .close-x { position: absolute; right: 25px; top: 20px; font-size: 32px; cursor: pointer; color: #bbb; z-index: 10; }
+    </style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+<body>
+
+<header>
+    <h1>Fawz <span>Haberdashery</span></h1>
+    <nav><a href="home.html">Home</a><a href="cart.html">Cart</a></nav>
+</header>
+
+<div class="section">
+    <h3>Pins & Fasteners</h3>
+    <div class="grid">
+        <!-- PRODUCT: DRESSMAKERS -->
+        <div class="card" onclick="openModal('Dressmakers Pins', 'tpl-dressmakers', 'images/pins/dressmakersPins/100g.jpg')">
+            <img src="images/pins/dressmakersPins/100g.jpg" onerror="this.src='https://via.placeholder.com/300?text=Dressmakers'">
+            <strong>Dressmakers Pins</strong>
+        </div>
+
+        <!-- PRODUCT: HEAD PINS -->
+        <div class="card" onclick="openModal('Head Pins', 'tpl-headpins', 'images/pins/head-main.jpg')">
+            <img src="images/pins/head-main.jpg" onerror="this.src='https://via.placeholder.com/300?text=Head+Pins'">
+            <strong>Head Pins</strong>
+        </div>
+
+        <!-- PRODUCT: SAFETY PINS -->
+        <div class="card" onclick="openModal('Safety Pins', 'tpl-safetypins', 'images/pins/safety-main.jpg')">
+            <img src="images/pins/safety-main.jpg" onerror="this.src='https://via.placeholder.com/300?text=Safety+Pins'">
+            <strong>Safety Pins</strong>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL STRUCTURE -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-x" onclick="closeModal()">&times;</span>
+        <div class="modal-left">
+            <img id="modal-img" src="">
+        </div>
+        <div class="modal-right">
+            <div class="selection-area">
+                <h2 id="modal-title">Product</h2>
+                <div id="dynamic-options"></div>
+                <label>Quantity</label>
+                <input type="number" id="qty" value="1" min="1">
+                <p id="price">R ####</p>
+                <button class="btn-add" onclick="addToCart()">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HTML-BASED IMAGE SETTINGS (Templates) -->
+<!-- Edit the "data-img" attribute to change the image for each specific option -->
+
+<template id="tpl-dressmakers">
+    <label>Select Type</label>
+    <select id="opt-variant" onchange="updateModalImage(this)">
+        <option value="B15 Red Tub" data-img="images/pins/dressmakersPins/redTub.jpg">B15 Red Tub</option>
+        <option value="G20 Green Tub" data-img="images/pins/dressmakersPins/g20.jpg">G20 Green Tub</option>
+        <option value="B20 Blue Tub" data-img="images/pins/dressmakersPins/b20.jpg">B20 Blue Tub</option>
+        <option value="100g Pack" data-img="images/pins/dressmakersPins/100g.jpg">100g Pack</option>
+        <option value="B15 Tub Carded" data-img="images/pins/dressmakersPins/B15Carded.jpg">B15 Tub Carded</option>
+        <option value="B20 Carded" data-img="images/pins/dressmakersPins/b20 carded.jpg">B20 Carded</option>
+        <option value="G20 Carded" data-img="images/pins/dressmakersPins/G20Carded.jpg">G20 Carded</option>
+        <option value="40mm Long Fine Pins" data-img="images/pins/dressmakersPins/extraLong.jpg">40mm Long Fine Pins</option>
+        <option value="Brass Carded 22mm" data-img="images/pins/dressmakersPins/brassCarded.jpg">Brass Carded 22mm</option>
+        <option value="Stainless Steel Carded 26mm" data-img="images/pins/dressmakersPins/stainlessSteelCarded.jpg">Stainless Steel Carded 26mm</option>
+        <option value="Draping Pins 50mm" data-img="images/pins/dressmakersPins/draping.jpg">Draping Pins 50mm</option>
+        <option value="Bulk Dress Pins" data-img="images/pins/dressmakersPins/bulkDress.jpg">Bulk Dress Pins</option>
+    </select>
+</template>
+
+<template id="tpl-headpins">
+    <label>Select Size</label>
+    <select id="opt-variant" onchange="updateModalImage(this)">
+        <option value="Glass Head 48mm" data-img="images/pins/head-48.jpg">Glass Head 48mm</option>
+        <option value="Diamond Head 38mm" data-img="images/pins/diamond-38.jpg">Diamond Head 38mm</option>
+        <option value="Diamond Head 55mm" data-img="images/pins/diamond-55.jpg">Diamond Head 55mm</option>
+        <option value="Diamond Head 64mm" data-img="images/pins/diamond-64.jpg">Diamond Head 64mm</option>
+    </select>
+    <label>Select Color</label>
+    <select id="opt-color">
+        <option value="Crystal">Crystal</option>
+        <option value="Blue">Blue</option>
+        <option value="Assorted">Assorted</option>
+    </select>
+</template>
+
+<template id="tpl-safetypins">
+    <label>Select Size</label>
+    <select id="opt-variant" onchange="updateModalImage(this)">
+        <option value="Size 00 (19mm)" data-img="images/pins/safety-00.jpg">Size 00 (19mm)</option>
+        <option value="Size 0 (23mm)" data-img="images/pins/safety-0.jpg">Size 0 (23mm)</option>
+        <option value="Size 1 (32mm)" data-img="images/pins/safety-1.jpg">Size 1 (32mm)</option>
+        <option value="Size 2 (38mm)" data-img="images/pins/safety-2.jpg">Size 2 (38mm)</option>
+        <option value="Size 3 (48mm)" data-img="images/pins/safety-3.jpg">Size 3 (48mm)</option>
+        <option value="Blanket Pins" data-img="images/pins/blanket.jpg">Blanket Pins</option>
+    </select>
+</template>
+
+<script>
+    let currentProductName = "";
+
+    function openModal(name, tplId, defaultImg) {
+        currentProductName = name;
+        document.getElementById("modal-title").textContent = name;
+        document.getElementById("modal-img").src = defaultImg;
+        
+        const container = document.getElementById("dynamic-options");
+        container.innerHTML = "";
+        const tpl = document.getElementById(tplId);
+        container.appendChild(tpl.content.cloneNode(true));
+
+        // Trigger initial image update from the first option
+        const variantSelect = document.getElementById("opt-variant");
+        if(variantSelect) updateModalImage(variantSelect);
+
+        document.getElementById("modal").style.display = "block";
+    }
+
+    function updateModalImage(selectEl) {
+        const selectedOption = selectEl.options[selectEl.selectedIndex];
+        const newImg = selectedOption.getAttribute("data-img");
+        if(newImg) {
+            document.getElementById("modal-img").src = newImg;
+        }
+    }
+
+    function closeModal() { document.getElementById("modal").style.display = "none"; }
+
+    function addToCart() {
+        const variant = document.getElementById("opt-variant").value;
+        const colorEl = document.getElementById("opt-color");
+        const color = colorEl ? colorEl.value : "";
+        const qty = document.getElementById("qty").value;
+
+        const cartItem = {
+            name: currentProductName,
+            details: `${variant} ${color}`,
+            qty: qty
+        };
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.push(cartItem);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        
+        alert(`${currentProductName} added to cart!`);
+        closeModal();
+    }
+
+    window.onclick = e => { if(e.target.id === "modal") closeModal(); }
+</script>
+</body>
+</html>

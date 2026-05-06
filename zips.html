@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fawz Haberdashery | Zips</title>
+<link rel="stylesheet" href="global-images.css">
+<style>
+:root {
+    --primary-red: #D22B2B;
+    --brand-green-dark: #124d2a;
+    --brand-green-light: #1a6338;
+    --brand-gold: #c5a059;
+    --bg-dark: #121212;
+    --bg-light: #F8F9FA;
+    --text-on-dark: #FFFFFF;
+    --text-on-light: #333333;
+    --shadow-card: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+* { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+body {
+    background: #ffffff;
+    color: var(--text-on-light);
+    line-height: 1.5;
+    scroll-behavior: smooth;
+}
+
+/* ===== HEADER ===== */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    padding: 10px 4%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border-bottom: 2px solid var(--primary-red);
+    flex-wrap: wrap;
+    gap: 8px;
+}
+#logo-container { display:flex; align-items:center; gap:10px; }
+header h1 { font-size: 1.2em; font-weight: 900; color: #1a1a1a; white-space: nowrap; letter-spacing: 1px; }
+header h1 span { color: var(--primary-red); }
+nav ul { display:flex; gap:4px; list-style:none; flex-wrap:wrap; }
+nav a { color: #1a1a1a; font-weight: 600; text-decoration: none; padding: 6px 14px; font-size: 0.9em; transition: color 0.2s; }
+nav a:hover { color: var(--primary-red); }
+
+/* ===== PAGE TITLE ===== */
+.page-title-section {
+    text-align: center;
+    padding: 50px 5% 40px;
+    background: #ffffff;
+}
+.page-title-section h2 {
+    font-size: 2.8em;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+}
+.page-title-underline {
+    width: 60px;
+    height: 4px;
+    background: var(--primary-red);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+/* ===== PRODUCT GRID ===== */
+.section {
+    padding: 20px 5% 60px;
+    background: #ffffff;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.product-card {
+    background: #f5f5f5;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card);
+}
+
+.product-img-wrap {
+    background: #f0f0f0;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.product-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.product-img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #e8e8e8;
+    color: #aaa;
+    font-size: 0.8em;
+    gap: 8px;
+}
+
+.product-info {
+    padding: 20px 10px 22px;
+    text-align: center;
+}
+.product-name {
+    font-size: 1.1em;
+    font-weight: 800;
+    color: #1a1a1a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 2000;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+    overflow-y: auto;
+}
+.modal-overlay.active { display: flex; }
+
+.modal {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 860px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+}
+
+.modal-close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 1.6em;
+    color: #aaa;
+    cursor: pointer;
+    background: none;
+    border: none;
+    line-height: 1;
+    z-index: 10;
+    transition: color 0.2s;
+}
+.modal-close:hover { color: var(--primary-red); }
+
+.modal-img-side {
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    overflow: hidden;
+}
+.modal-img-side img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.modal-img-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+    font-size: 0.85em;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+}
+
+.modal-content-side {
+    padding: 36px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
+.modal-product-title {
+    font-size: 1.6em;
+    font-weight: 900;
+    color: var(--primary-red);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    padding-right: 24px;
+}
+
+.modal-field label {
+    display: block;
+    font-size: 0.72em;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 6px;
+}
+.modal-field select,
+.modal-field input[type="number"] {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95em;
+    color: #1a1a1a;
+    background: #fff;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    outline: none;
+}
+.modal-field select:focus,
+.modal-field input[type="number"]:focus {
+    border-color: var(--brand-gold);
+}
+.select-wrap { position: relative; }
+.select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    pointer-events: none;
+    font-size: 0.9em;
+}
+
+.modal-price {
+    font-size: 2em;
+    font-weight: 900;
+    color: #1a1a1a;
+    letter-spacing: 0.5px;
+}
+.modal-price span { color: #999; font-size: 0.5em; font-weight: 400; display: block; margin-top: -4px; }
+
+.modal-add-btn {
+    background: var(--primary-red);
+    color: white;
+    border: none;
+    padding: 13px 28px;
+    font-size: 0.9em;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+.modal-add-btn:hover {
+    background: #b52020;
+    transform: translateY(-1px);
+}
+
+.modal-recent {
+    border-top: 1px solid #eee;
+    padding-top: 14px;
+}
+.modal-recent-title {
+    font-size: 0.72em;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--primary-red);
+    margin-bottom: 6px;
+}
+.modal-recent-empty {
+    font-size: 0.85em;
+    color: #bbb;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:700px){
+    .modal { grid-template-columns: 1fr; }
+    .modal-img-side { min-height: 200px; max-height: 200px; }
+    .modal-content-side { max-height: none; }
+    .products-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
+    .page-title-section h2 { font-size: 2em; }
+}
+@media(max-width:480px){
+    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .product-img-wrap { height: 160px; }
+}
+</style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div id="logo-container">
+        <h1>FAWZ <span>HABERDASHERY</span></h1>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="home.html">Home</a></li>
+            <li><a href="demo_cart.html">View Cart</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- PAGE TITLE -->
+<div class="page-title-section">
+    <h2>Zips</h2>
+    <div class="page-title-underline"></div>
+</div>
+
+<!-- PRODUCT GRID -->
+<div class="section">
+    <div class="products-grid">
+
+        <!-- 1. Denim Zips -->
+        <div class="product-card" onclick="openModal('denim')">
+            <div class="product-img-wrap">
+                <!-- PRODUCT IMAGE: Denim Zips -->
+                <!-- <img src="images/zips/denim-zips.jpg" alt="Denim Zips"> -->
+                <div class="product-img-placeholder">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#aaa" stroke-width="2"><rect x="18" y="4" width="12" height="40" rx="3"/><line x1="24" y1="4" x2="24" y2="44"/><rect x="20" y="18" width="8" height="10" rx="1"/></svg>
+                    <span>Denim Zips</span>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Denim Zips</div>
+            </div>
+        </div>
+
+        <!-- 2. Invisible Zips -->
+        <div class="product-card" onclick="openModal('invisible')">
+            <div class="product-img-wrap">
+                <!-- PRODUCT IMAGE: Invisible Zips -->
+                <!-- <img src="images/zips/invisible-zips.jpg" alt="Invisible Zips"> -->
+                <div class="product-img-placeholder">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#aaa" stroke-width="2"><rect x="20" y="4" width="8" height="40" rx="3"/><line x1="24" y1="4" x2="24" y2="44"/></svg>
+                    <span>Invisible Zips</span>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Invisible Zips</div>
+            </div>
+        </div>
+
+        <!-- 3. No.3 Closed End -->
+        <div class="product-card" onclick="openModal('no3closed')">
+            <div class="product-img-wrap">
+                <!-- PRODUCT IMAGE: No.3 Closed End -->
+                <!-- <img src="images/zips/no3-closed-end.jpg" alt="No.3 Closed End"> -->
+                <div class="product-img-placeholder">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#aaa" stroke-width="2"><rect x="18" y="4" width="12" height="40" rx="3"/><line x1="24" y1="4" x2="24" y2="44"/><circle cx="24" cy="8" r="5"/></svg>
+                    <span>No.3 Closed End</span>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">No.3 Closed End</div>
+            </div>
+        </div>
+
+        <!-- 4. No.5 Open End Zip -->
+        <div class="product-card" onclick="openModal('no5open')">
+            <div class="product-img-wrap">
+                <!-- PRODUCT IMAGE: No.5 Open End Zip -->
+                <!-- <img src="images/zips/no5-open-end.jpg" alt="No.5 Open End Zip"> -->
+                <div class="product-img-placeholder">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#aaa" stroke-width="2"><rect x="17" y="4" width="14" height="40" rx="3"/><line x1="24" y1="4" x2="24" y2="44"/><rect x="19" y="20" width="10" height="8" rx="1"/></svg>
+                    <span>No.5 Open End</span>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">No.5 Open End Zip</div>
+            </div>
+        </div>
+
+        <!-- 5. Trouser Zips 20cm -->
+        <div class="product-card" onclick="openModal('trouser')">
+            <div class="product-img-wrap">
+                <!-- PRODUCT IMAGE: Trouser Zips -->
+                <!-- <img src="images/zips/trouser-zips.jpg" alt="Trouser Zips 20cm"> -->
+                <div class="product-img-placeholder">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#aaa" stroke-width="2"><rect x="19" y="4" width="10" height="40" rx="3"/><line x1="24" y1="4" x2="24" y2="44"/></svg>
+                    <span>Trouser Zips 20cm</span>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Trouser Zips 20cm</div>
+            </div>
+        </div>
+
+        <!-- 6. Upholstery Chain Zips -->
+        <div class="product-card" onclick="openModal('upholstery')">
+            <div class="product-img-wrap">
+                <!-- PRODUCT IMAGE: Upholstery Chain Zips -->
+                <!-- <img src="images/zips/upholstery-chain.jpg" alt="Upholstery Chain Zips"> -->
+                <div class="product-img-placeholder">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#aaa" stroke-width="2"><rect x="16" y="4" width="16" height="40" rx="2"/><line x1="24" y1="4" x2="24" y2="44"/><rect x="18" y="10" width="12" height="6" rx="1"/><rect x="18" y="22" width="12" height="6" rx="1"/><rect x="18" y="34" width="12" height="6" rx="1"/></svg>
+                    <span>Upholstery Chain Zips</span>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Upholstery Chain Zips</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Modal: Denim Zips -->
+<div class="modal-overlay" id="modal-denim">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('denim')">&times;</button>
+        <div class="modal-img-side">
+            <!-- MODAL IMAGE: Denim Zips -->
+            <!-- <img src="images/zips/denim-zips.jpg" alt="Denim Zips"> -->
+            <div class="modal-img-placeholder">
+                <svg width="64" height="64" viewBox="0 0 48 48" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="18" y="4" width="12" height="40" rx="3"/><line x1="24" y1="4" x2="24" y2="44"/><rect x="20" y="18" width="8" height="10" rx="1"/></svg>
+                <span>Product image coming soon</span>
+            </div>
+        </div>
+        <div class="modal-content-side">
+            <div class="modal-product-title">Denim Zips</div>
+            <div class="modal-field">
+                <label>Select Colour</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>Black</option>
+                        <option>Navy</option>
+                        <option>Brown</option>
+                        <option>White</option>
+                        <option>Cream</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Select Size</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>10cm</option>
+                        <option>15cm</option>
+                        <option>18cm</option>
+                        <option>20cm</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Packing</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>With Header Cards — 100's / Pack</option>
+                        <option>Loose — 100's / Pack</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Quantity (Packs)</label>
+                <input type="number" value="1" min="1">
+            </div>
+            <div class="modal-price">R ####<span>Price on enquiry</span></div>
+            <button class="modal-add-btn">Add to Cart</button>
+            <div class="modal-recent">
+                <div class="modal-recent-title">Recent Additions</div>
+                <div class="modal-recent-empty">Cart empty.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Invisible Zips -->
+<div class="modal-overlay" id="modal-invisible">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('invisible')">&times;</button>
+        <div class="modal-img-side">
+            <div class="modal-img-placeholder">
+                <svg width="64" height="64" viewBox="0 0 48 48" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="20" y="4" width="8" height="40" rx="3"/><line x1="24" y1="4" x2="24" y2="44"/></svg>
+                <span>Product image coming soon</span>
+            </div>
+        </div>
+        <div class="modal-content-side">
+            <div class="modal-product-title">Invisible Zips</div>
+            <div class="modal-field">
+                <label>Select Colour</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>White</option>
+                        <option>Black</option>
+                        <option>Cream</option>
+                        <option>Navy</option>
+                        <option>Red</option>
+                        <option>Maroon</option>
+                        <option>Royal Blue</option>
+                        <option>Pink</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Select Size</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>20cm</option>
+                        <option>22cm</option>
+                        <option>25cm</option>
+                        <option>30cm</option>
+                        <option>35cm</option>
+                        <option>40cm</option>
+                        <option>50cm</option>
+                        <option>60cm</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Quantity (Packs)</label>
+                <input type="number" value="1" min="1">
+            </div>
+            <div class="modal-price">R ####<span>Price on enquiry</span></div>
+            <button class="modal-add-btn">Add to Cart</button>
+            <div class="modal-recent">
+                <div class="modal-recent-title">Recent Additions</div>
+                <div class="modal-recent-empty">Cart empty.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: No.3 Closed End -->
+<div class="modal-overlay" id="modal-no3closed">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('no3closed')">&times;</button>
+        <div class="modal-img-side">
+            <div class="modal-img-placeholder">
+                <svg width="64" height="64" viewBox="0 0 48 48" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="18" y="4" width="12" height="40" rx="3"/><line x1="24" y1="4" x2="24" y2="44"/><circle cx="24" cy="8" r="5"/></svg>
+                <span>Product image coming soon</span>
+            </div>
+        </div>
+        <div class="modal-content-side">
+            <div class="modal-product-title">No.3 Closed End</div>
+            <div class="modal-field">
+                <label>Select Colour</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>White</option>
+                        <option>Black</option>
+                        <option>Cream</option>
+                        <option>Red</option>
+                        <option>Navy</option>
+                        <option>Royal Blue</option>
+                        <option>Yellow</option>
+                        <option>Gold</option>
+                        <option>Orange</option>
+                        <option>Maroon</option>
+                        <option>Brown</option>
+                        <option>Pink</option>
+                        <option>Rose</option>
+                        <option>Mint</option>
+                        <option>Lime</option>
+                        <option>Emerald</option>
+                        <option>Bottle Green</option>
+                        <option>Powder Blue</option>
+                        <option>Lilac</option>
+                        <option>Purple</option>
+                        <option>Beige</option>
+                        <option>Grey</option>
+                        <option>Turquoise</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Select Size</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>15cm</option>
+                        <option>20cm</option>
+                        <option>25cm</option>
+                        <option>30cm</option>
+                        <option>35cm</option>
+                        <option>40cm</option>
+                        <option>45cm</option>
+                        <option>50cm</option>
+                        <option>55cm</option>
+                        <option>60cm</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Packing</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>With Header Cards — 100's / Pack</option>
+                        <option>Loose — 100's / Pack</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Quantity (Packs)</label>
+                <input type="number" value="1" min="1">
+            </div>
+            <div class="modal-price">R ####<span>Price on enquiry</span></div>
+            <button class="modal-add-btn">Add to Cart</button>
+            <div class="modal-recent">
+                <div class="modal-recent-title">Recent Additions</div>
+                <div class="modal-recent-empty">Cart empty.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: No.5 Open End Zip -->
+<div class="modal-overlay" id="modal-no5open">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('no5open')">&times;</button>
+        <div class="modal-img-side">
+            <div class="modal-img-placeholder">
+                <svg width="64" height="64" viewBox="0 0 48 48" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="17" y="4" width="14" height="40" rx="3"/><line x1="24" y1="4" x2="24" y2="44"/><rect x="19" y="20" width="10" height="8" rx="1"/></svg>
+                <span>Product image coming soon</span>
+            </div>
+        </div>
+        <div class="modal-content-side">
+            <div class="modal-product-title">No.5 Open End Zip</div>
+            <div class="modal-field">
+                <label>Select Colour</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>White</option>
+                        <option>Black</option>
+                        <option>Cream</option>
+                        <option>Red</option>
+                        <option>Navy</option>
+                        <option>Royal Blue</option>
+                        <option>Yellow</option>
+                        <option>Gold</option>
+                        <option>Orange</option>
+                        <option>Maroon</option>
+                        <option>Brown</option>
+                        <option>Pink</option>
+                        <option>Beige</option>
+                        <option>Grey</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Select Size</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>40cm</option>
+                        <option>45cm</option>
+                        <option>50cm</option>
+                        <option>55cm</option>
+                        <option>60cm</option>
+                        <option>65cm</option>
+                        <option>70cm</option>
+                        <option>75cm</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Quantity (50's / Pack)</label>
+                <input type="number" value="1" min="1">
+            </div>
+            <div class="modal-price">R ####<span>Price on enquiry</span></div>
+            <button class="modal-add-btn">Add to Cart</button>
+            <div class="modal-recent">
+                <div class="modal-recent-title">Recent Additions</div>
+                <div class="modal-recent-empty">Cart empty.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Trouser Zips 20cm -->
+<div class="modal-overlay" id="modal-trouser">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('trouser')">&times;</button>
+        <div class="modal-img-side">
+            <div class="modal-img-placeholder">
+                <svg width="64" height="64" viewBox="0 0 48 48" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="19" y="4" width="10" height="40" rx="3"/><line x1="24" y1="4" x2="24" y2="44"/></svg>
+                <span>Product image coming soon</span>
+            </div>
+        </div>
+        <div class="modal-content-side">
+            <div class="modal-product-title">Trouser Zips 20cm</div>
+            <div class="modal-field">
+                <label>Select Colour</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>Black</option>
+                        <option>White</option>
+                        <option>Cream</option>
+                        <option>Navy</option>
+                        <option>Brown</option>
+                        <option>Beige</option>
+                        <option>Grey</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Packing</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>With Header Cards — 100's / Pack</option>
+                        <option>Loose — 100's / Pack</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Quantity (Packs)</label>
+                <input type="number" value="1" min="1">
+            </div>
+            <div class="modal-price">R ####<span>Price on enquiry</span></div>
+            <button class="modal-add-btn">Add to Cart</button>
+            <div class="modal-recent">
+                <div class="modal-recent-title">Recent Additions</div>
+                <div class="modal-recent-empty">Cart empty.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Upholstery Chain Zips -->
+<div class="modal-overlay" id="modal-upholstery">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('upholstery')">&times;</button>
+        <div class="modal-img-side">
+            <div class="modal-img-placeholder">
+                <svg width="64" height="64" viewBox="0 0 48 48" fill="none" stroke="#bbb" stroke-width="1.5"><rect x="16" y="4" width="16" height="40" rx="2"/><line x1="24" y1="4" x2="24" y2="44"/><rect x="18" y="10" width="12" height="6" rx="1"/><rect x="18" y="22" width="12" height="6" rx="1"/><rect x="18" y="34" width="12" height="6" rx="1"/></svg>
+                <span>Product image coming soon</span>
+            </div>
+        </div>
+        <div class="modal-content-side">
+            <div class="modal-product-title">Upholstery Chain Zips</div>
+            <div class="modal-field">
+                <label>Select Colour</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>White</option>
+                        <option>Cream</option>
+                        <option>Black</option>
+                        <option>Brown</option>
+                        <option>Beige</option>
+                        <option>Grey</option>
+                        <option>Navy</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Select Length</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>Per Metre</option>
+                        <option>5m Roll</option>
+                        <option>10m Roll</option>
+                        <option>25m Roll</option>
+                        <option>50m Roll</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Slider Type</label>
+                <div class="select-wrap">
+                    <select>
+                        <option>Auto Lock Silver</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Quantity</label>
+                <input type="number" value="1" min="1">
+            </div>
+            <div class="modal-price">R ####<span>Price on enquiry</span></div>
+            <button class="modal-add-btn">Add to Cart</button>
+            <div class="modal-recent">
+                <div class="modal-recent-title">Recent Additions</div>
+                <div class="modal-recent-empty">Cart empty.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="cart.js"></script>
+<script>
+function openModal(id) {
+    const overlay = document.getElementById('modal-' + id);
+    if (overlay) {
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+function closeModal(id) {
+    const overlay = document.getElementById('modal-' + id);
+    if (overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(o => {
+            o.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
+});
+</script>
+
+</body>
+</html>
+               

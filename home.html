@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fawz Haberdashery | Retailer Ordering</title>
+    <link rel="stylesheet" href="global-images.css">
+    <style>
+        :root {
+            --primary-red: #D22B2B;
+            --palestine-green: #007A3D;
+            --brand-green-dark: #124d2a;
+            --brand-green-light: #1a6338;
+            --brand-gold: #c5a059;
+            --bg-dark: #121212;
+            --bg-light: #F8F9FA;
+            --text-on-dark: #FFFFFF;
+            --text-on-light: #333333;
+            --shadow-card: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ===== GLOBAL ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-on-light);
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        /* ===== SUPPORT BANNER ===== */
+        #support-banner {
+            position: relative;
+            width: 100%;
+            padding: 30px 5%;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+            background-color: var(--brand-green-dark);
+            background-image: linear-gradient(135deg, var(--brand-green-light) 0%, var(--brand-green-dark) 100%);
+            box-sizing: border-box;
+        }
+
+        #support-banner::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.12;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l15 15H15zM15 15L0 30l15 15V15zm15 15L15 45h30L30 30zm15-15l15 15-15 15V15z' fill='%23ffffff' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            pointer-events: none;
+        }
+
+        #support-banner h2 {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 10px 0;
+            font-size: 1.6em;
+            letter-spacing: 2px;
+            color: var(--brand-gold);
+            text-transform: uppercase;
+        }
+
+        #support-text-container {
+            position: relative;
+            z-index: 1;
+            height: 30px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .support-text-item {
+            font-size: 1.1em;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            margin: 0;
+        }
+
+        .support-text-item.active {
+            opacity: 1;
+            position: relative;
+        }
+
+        #support-banner-ctas {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .cta-button {
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 0.9em;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .cta-button:hover {
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #dismiss-banner {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.8em;
+            background: none;
+            border: none;
+            z-index: 2;
+            line-height: 1;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            padding: 10px 4%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(18, 18, 18, 0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid var(--brand-gold);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        #logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-direction: row;
+        }
+
+        header h1 {
+            font-size: 1.05em;
+            color: var(--brand-gold);
+            white-space: nowrap;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 4px;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 0.82em;
+            transition: background 0.2s;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--brand-gold);
+        }
+
+        .cart-link {
+            background: var(--brand-gold);
+            color: #1a0000 !important;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .cart-link:hover {
+            background: #d4b06a !important;
+            color: #1a0000 !important;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -7px;
+            right: -7px;
+            background: #e60000;
+            color: white;
+            font-size: 0.62em;
+            font-weight: 900;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(18, 18, 18, 0.92);
+        }
+
+        .cart-badge.visible {
+            display: flex;
+        }
+
+        #search-bar {
+            display: flex;
+            align-items: center;
+            border-radius: 30px;
+            padding: 9px 18px;
+            background: rgba(255, 255, 255, 0.96);
+            border: 2px solid rgba(197, 160, 89, 0.5);
+            transition: all 0.2s;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        #search-bar:focus-within {
+            box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.45), 0 4px 16px rgba(0, 0, 0, 0.2);
+            border-color: #c5a059;
+        }
+
+        #search-bar input {
+            border: none;
+            outline: none;
+            background: none;
+            color: #222;
+            width: 200px;
+            font-size: 0.92em;
+            font-weight: 500;
+        }
+
+        #search-bar input::placeholder {
+            color: #999;
+        }
+
+        #search-bar button {
+            border: none;
+            background: none;
+            color: var(--brand-gold);
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        @media(max-width:600px) {
+            nav a {
+                padding: 5px 8px;
+                font-size: 0.76em;
+            }
+        }
+
+        /* ===== HERO ===== */
+        #hero-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 5%;
+            text-align: center;
+            color: white;
+            background: #5a5a5a;
+            position: relative;
+        }
+
+        #hero-section h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        #hero-section p {
+            font-size: 1.2em;
+            max-width: 600px;
+        }
+
+        /* ===== CATEGORY CARDS ===== */
+        .section {
+            padding: 50px 5%;
+        }
+
+        .section h3 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.4em;
+            color: #fff;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9));
+            border-radius: 20px;
+            padding: 35px 25px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            transition: all 0.4s ease;
+            min-height: 250px;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35), 0 0 28px rgba(197, 160, 89, 0.45), 0 0 8px rgba(197, 160, 89, 0.3);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent, rgba(197, 160, 89, 0.22), transparent);
+            opacity: 0;
+            transition: 0.4s;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .placeholder-box {
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:768px) {
+            #hero-section h2 {
+                font-size: 2em;
+            }
+
+            #hero-section p {
+                font-size: 1em;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 15px;
+            }
+
+            .section h3 {
+                font-size: 1.8em;
+            }
+        }
+
+        @media(max-width:600px) {
+            header {
+                padding: 8px 4%;
+                gap: 6px;
+            }
+
+            #logo-container {
+                gap: 7px;
+            }
+
+            header h1 {
+                font-size: 0.88em;
+            }
+
+            nav ul {
+                gap: 3px;
+            }
+
+            nav a {
+                padding: 5px 8px;
+                font-size: 0.74em;
+            }
+
+            #hero-section {
+                padding: 60px 5%;
+            }
+
+            #hero-section h2 {
+                font-size: 1.6em;
+            }
+
+            #hero-section p {
+                font-size: 0.92em;
+            }
+
+            .section {
+                padding: 35px 4%;
+            }
+
+            .section h3 {
+                font-size: 1.5em;
+                letter-spacing: 1px;
+            }
+
+            #category-search input {
+                width: 100% !important;
+                font-size: 0.98em !important;
+                padding: 13px 18px !important;
+            }
+
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .card {
+                padding: 20px 12px;
+                min-height: 180px;
+                border-radius: 14px;
+            }
+
+            .placeholder-box {
+                height: 100px;
+            }
+
+            footer>div>div:first-child {
+                grid-template-columns: 1fr !important;
+            }
+
+            footer {
+                padding: 28px 5% 18px !important;
+            }
+        }
+
+        .card strong {
+            display: block;
+            margin-top: 10px;
+            font-size: 1.05em;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        /* subtle gold accent line */
+        .card strong::after {
+            content: "";
+            display: block;
+            width: 40px;
+            height: 3px;
+            margin: 8px auto 0;
+            background: var(--brand-gold);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* hover effect */
+        .card:hover strong {
+            color: var(--brand-green-dark);
+            transform: translateY(-2px);
+        }
+
+        .card:hover strong::after {
+            width: 70px;
+            background: linear-gradient(90deg, var(--brand-gold), #e6c57a);
+        }
+    </style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+
+<body>
+
+    <!-- SUPPORT BANNER -->
+    <div id="support-banner">
+        <button id="dismiss-banner" aria-label="Close Banner">&times;</button>
+        <h2>SUPPORT FOR PALESTINE</h2>
+        <div id="support-text-container">
+            <p class="support-text-item active">Your support brings vital aid: food, medical supplies, and shelter.</p>
+            <p class="support-text-item">Every contribution makes a tangible difference in a life.</p>
+            <p class="support-text-item">Standing together in solidarity for a brighter future.</p>
+        </div>
+        <div id="support-banner-ctas">
+            <a href="https://alimdaad.com/project/516" target="_blank" class="cta-button">DONATE TO AL IMDAAD</a>
+            <a href="https://alimdaad.com/aboutus" target="_blank" class="cta-button"
+                style="background-color: var(--palestine-green);">LEARN MORE</a>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div id="logo-container">
+            <div id="main-logo">
+                <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCACkAJgDASIAAhEBAxEB/8QAHAABAAMBAQEBAQAAAAAAAAAAAAYHCAQFAQMC/8QATxAAAAUCAgMJCAwMBwAAAAAAAAECAwQFBgcREiExEzdBUWGUsbLSFxgiU3FzdHUIFBUyOFJVVoHC0eEWIyQzYmSRkpOhwfA2QkNERUZX/8QAHAEBAAIDAQEBAAAAAAAAAAAAAAQGAwUHAgEI/8QAOxEAAQMCAwILBQYHAAAAAAAAAQACAwQRBSExEmEGE0FRUnFygZGx0RQWMzShFSIyU3PSI0JDgsHh8P/aAAwDAQACEQMRAD8AgQAAo6/SSAAAiAAAiAAAiAAAiAAAiAAAiAAAiAAAiAAAiAAAiAAAisPB+j2JcU4qNczk2JPdX+TvNvkltz9E8y1H0i5ywAsY/wDWquv9YLsjKyVGlRKSZkZHmRkeshovATFpcxyNa1yOqXIMybhyj1mviQvl4jG0oJKdx4uVovyFUnhPSYnCDVUUrtkatvpvG7dyL3+9+sbx1V5wXZDvfrG8dVecF2RbhGBjdexU/QC557xYn+e7xVR979Y3jqrzguyHe/WN46q84LsiI4j4yXdb99VOi09EJceM9oNktnNWWRcvKPLbxrxKV72jsL8kJYgOloWuLdjTcrPHR8I5I2yCfJwBF3W1Vhd79Y3jqrzguyHe/WN46q84LsiBIxixTM802+lRcXue4P2ax3viCedUtqOaf0mXGukBLQ8rPojqLhINJ7/3hTfvfrG8dVecF2Q736xvHVXnBdkcFqeyDoc+QmPXac/S1KPLdUK3RsvLsMv2GLip86LUYbUyDJbkR3U6SHG1ZpUXlEqGKjmH3GgrT11dj1AQKh72335Hv0VWd79Y3jqrzguyPivY/wBjJI1G9Vci/WE9kW5meWsVN7I6+ztu3vcSA7lUqkg06RHkbTWw1eU9hfSPs1PTRML3MGS8YfimMV9Q2nimdd2/Tf3LPeJsK2qbdL1NtZUh6JG/FuPOukvdHC26ORFqLYI1IYejubm+0tpeRHorSZHkezUYsvCy2KfCpL2IN2oL3IhH+Sx17ZbxbCy4Sz/vUIVelxTLouKTWJuilbqskNpLJLaC1JSXkIV2Vn3ds5E6Dcur0NSXSmnZd7WCznk6u5t+/m0XigACOtsgAAIgAAIgk2Fe+Pb/AKe11hGRJsKt8e3/AE9rrDJD8RvWFEr/AJWXsnyW4Mh95AA9oua/PCyBiJv/AMksv+Ua6UiS4s4oXlQr8qdIplQbYiR1kltJMJMyLRI9pkI1iHv/AMn1o10pHBjxvrVvzqeqQrL5HRtkLTb73quy0tLDUyUrZmBwEV8xfor9e7DiFnn7vK/go+wfs1jPfydTlTYfLhJyMgyP+QrsBF9qm6R8Vujg2HkWMLfAKxHcQqRWy3K67Npb5K1HKgJOO+XLwkf7BLcL7ri2XU2PaFWXUbTqDpNrQ7qegOHsNaeAuUtRijh/aHHEEokLUkllkoiPaQyR1j2u2jqo1TgNPNEYm3DTqNR3X0I3d6369JZaiKlLdSllCDcUsz1Ekizzz8gyShqZi1i864tS0wlOGpa89TMZHRmX8zHqlim47gg/br8hR1YlFDSZ7VRzLPPPkItEfxS3fwDwUdnIPQrNzqNtk9im45ajP6df7xcQ2NTUMqC0fygXPoqhg+Ez4U2U2/ivdxbOrUu6rZ9y8XGi7GKxV26DRTS1QKSW4RW2/erMtRr5eT7xXoANPLI6Vxc5dBoqRlJA2Fmg+p5Sd5QAAY1KQAAEQAAEQSbCrfHt/wBPa6wjIk2FW+Pb/p7XWGSH4jesKJX/ACsnZPktwge0APaLmF+eFkDEPf8A5PrRrpSODHjfWrfnU9Uh34h7/wDJ9aNdKRwY8b61b86nqkKtN+F/a9V23DfjU36P7VBgAdFPhyahNZhQ2VvyHlkhttBZmozEIC+QVjc4NBJOS/Jlp15RpabUtREajJJZ5EWszH8DS9Fwzi2ZhRXJ05Db1bfpzm6OZZ7iRp94n+p8IqegUmnScErhqr8RtU6JUGUsPZeEglaJGWfFyCW+jfHYO1IJ8FoaXhDBVF7oxdoc1t+cuyv1XUBLLMs9gluJt1sXPNpqYLLseBT4LcZlpeWZGReEerjPoIREBFa9zWlo5VuX00b5Wyu1be3fqgAA8rOgAAIgAAIgAOuj06ZVqpHpsBlT0mQskNoSW0zH0Ak2C8ucGNLnGwC5C1nkW0TvCa2rgdveh1BFFnnEbmNrU8bCiQSSPbnlsF7WFhvZ9hU1qdX34D1RyJS5MxaUoQfEglatXHtEpg4h2RMqLVNh3BDdkuLJDbaDM9JR7CI8shuIMNa0gyuseZc/xPhe+Zj46OEubYguzt15DzUs5QMCAb9cuWX74s26JeNT9UjUOa7CVUWnCeS34JpI05nmOLGSybsqeJFXnU+gTpEZ1xJocbbzSrwS2DQ9Uv2z6XPdgVCvwo8lk9Fxta8jSfKOcsTbCL/s9P8A3xqX0cDtoF+pvyK703CHE43RyNgvst2Rk7MZZ/RZRLDq+M/8MVL+ENDYGYXs2nBRWKs0lytPo2HrKOk/8pcvGYlSMSrEdWltFzU81KMiIjcy1iUtrQtCXEKJSVFmRpPMjIZKWhgjftNNysGNcJsRq4OIlZxbTrkRfdnyKPYpEXc5r+r/AGLvVGarW+D7dfrKP9UaVxS3ua/6C71Rmq1vg+3X6yj/AFRir/ijsuU3gt8k79WPzCrIAAV5dVQAAF9QAAEQAAEQTHDC7IdmzJ9YOF7aqftfcoJK94hSj8JR/QIcA9xvMbg4aqPU0zKmIxSfhOvp36FWbS7VvLEh525K/Uyh0zM1LmzF6LaU8OgnZkX0EJHZlv4V0q8qU3Fu2fU6mmUjcdxZImlLz1a8tn0isLgvK4a7SYVKnzlHChNE20y2RISZFsNRFtPlH64Vb49v+ntdYTGTR7bbNubi5PotBUYfVOppDJJsNANmsAAsAdSRc35dAtvkXEPpj7wge0WlcTWNsWIhT8a6nBNe5lInIa0ss9HS0SzEiq2GFg0moO0+pYltxZTJ5ONLha0nln8YePiHv/yfWjXSkcGPG+tW/Op6pCrv2G7b3Nudrfv5l2qn4+UU0EcpYOLBNgDcjZHKDzr3fwCwz/8AVWOZH2hPbDvui2dNh209d0Wu0VwtFiYSTQ5GV8VZHn4HEeeoZsAeI6zijdjQD3+qz1WAe2x8XUzOeN4bkecENB+vWtwYmOtvYbV1bSyWhVPcUlRHmRlo7Rmy1vg+3X6yj/VCzcUZcKyapaVaUuREfhuNQ3T1qaUZaknxp6Atf4Pt1+so/wBUTJqhtQ4Ob0XeS0GHYTNhcToZdONjsecbQVZAADTLoCAAAvqAAAiAAAiAAAiCTYVb49v+ntdYRkSbCrfHt/09rrDJD8RvWFEr/lZOyfJbhA9oAe0XML88LIGIe/8AyfWjXSkcGPG+tW/Op6pDvxD3/wCT60a6Ujgx431q351PVIVab8L+16rtuG/Gpv0f2qDAACCrKg9OHXanFoMyhsyMoExaVvNGRGRqSZZGXFsHmAPoJGi8PjbILOF+XvGiAAD4vaAAAiAAAiAAAiAAAiCTYVb49v8Ap7XWEZEwwbp06fiNRlQ4rr6Y8pDrykJzJCCPWZnwDLACZG25woWIua2klLjYbJ8ltcD2hnmB8YuQX56WQMQ9/wDk+tGulI4MeN9at+dT1SHsYoQZkLHo3pUdxpuRUGXWVKLIlpzTrI+EeTj4043irWDcbUglrSpOZZaRaJayFXnBDX9r1Xa8Me10tNY/0v2qCAACArOgAAIgAAIgAAIgAAIgAAIgAPpHkZHkR+UEU1www4rd8Ti9rtqjU5tX46WtPglyJ+MY1hY1oUS0KUmn0iMSM8jddVrW6rjUYyxSsXr3pcFqDT5kSNGaSSUNtxEERF+wdXdtxE+VWeao+wbekqaWnF7EnnVDxzB8ZxV+ztNbGNBc+JyzPktfcA+6shkDu24ifKrPNUfYHdtxE+VWeao+wTftaDmP/d6rvuJiPSb4n0WlcRrMpl50Y4UxJtyGvDiyUe/ZXwGXJxkKduK35t301217iQhi9aO2ZwXz1JqLBcR7DP8Ar9IhZ424ifKrPNUfYPLrWJt31eXClzZrRyYTpOx3kMJQtB8WZFsPhLYYiz1tPJnY567/APY5Ct1hnBzFaSzS9tm5tNzdp8NDoR36qHymHoshyNIaW082o0rQosjSZbSMfmLdvOnwsRrXVe9BYS3WYiCKsw0Fkasi/OpLh/viFRDVTRcWcswdFdcPrRVRm42XtycOY+nKDyhAABiU9AAARAAARAAARAAARAAAXxTazcQn7cpR09dv0WpoJWkhyXHJS0lxZltLyj2+7Av5kWvzX7xVwCQ2qlaLBy1U2B0E0hkfHcnefVWj3YF/Mi1+a/eHdgX8yLX5r94q4B69sm6Sx+72Hfl/V3qrR7sC/mRa/NPvDuwL+ZFr80+8VcAe2TdJPd7Dvy/q71VtQccKjBNZwrUt6MbidFe5MGnSLiPI9YrOuzm6nVpE9uExCS+s17gznoIM9uWfAOEBjkqJJQA83Umjwqkonl8DLE65n/JQAAYVsUAABEAABEAABEAABEAABEAABEAABEAABEAABEAABEAABEAABEAABF//2Q=="
+                    alt="Fawz Logo" style="height:50px;width:auto;border-radius:6px;">
+            </div>
+            <h1>Fawz Haberdashery</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#hero-section">Home</a></li>
+                <li><a href="#product-showcase">Shop</a></li>
+                <li><a href="demo_cart.html" class="cart-link">🛒 Cart <span class="cart-badge"
+                            id="cartBadge">0</span></a></li>
+            </ul>
+        </nav>
+
+    </header>
+
+
+
+    <!-- CATEGORY SEARCH AND GRID -->
+    <div class="section" id="product-showcase">
+        <h3>Categories</h3>
+        <div id="category-search" style="text-align:center; margin-bottom:40px;">
+            <input type="text" id="search-input" placeholder="🔍  Search categories..."
+                style="padding:16px 28px; width:480px; max-width:92vw; border-radius:40px; border:3px solid rgba(197,160,89,0.6); font-size:1.15em; font-weight:600; background:#fff; box-shadow:0 6px 24px rgba(0,0,0,0.2), 0 0 0 0px rgba(197,160,89,0.3); outline:none; transition:all 0.25s; color:#222;"
+                onfocus="this.style.borderColor='#c5a059';this.style.boxShadow='0 6px 30px rgba(0,0,0,0.25), 0 0 0 4px rgba(197,160,89,0.2)'"
+                onblur="this.style.borderColor='rgba(197,160,89,0.6)';this.style.boxShadow='0 6px 24px rgba(0,0,0,0.2)'">
+        </div>
+        <div class="grid" id="category-grid">
+
+            <a href="adhesives.html">
+                <div class="card" data-name="Adhesives">
+                    <!-- CARD IMAGE: Adhesives Category -->
+                    <img src="images/home-covers/adhesives-home.webp" class="site-image-card" alt="Adhesives">
+                    <strong>Adhesives</strong>
+                </div>
+            </a>
+
+            <a href="beadsAndKits.html">
+                <div class="card" data-name="Beads and Kits">
+                    <!-- CARD IMAGE: Beads and Kits Category -->
+                    <img src="images/home-covers/beadsAndKits-home.webp" class="site-image-card" alt="Beads and Kits">
+                    <strong>Beads and Kits</strong>
+                </div>
+            </a>
+
+            <a href="biasBinding.html">
+                <div class="card" data-name="Bias Binding">
+                    <!-- CARD IMAGE: Bias Binding Category -->
+                    <img src="images/home-covers/biasBinding-home.webp" class="site-image-card" alt="Bias Binding">
+                    <strong>Bias Binding</strong>
+                </div>
+            </a>
+
+            <a href="biasTapeMakers.html">
+                <div class="card" data-name="Bias Tape Makers">
+                    <!-- CARD IMAGE: Bias Tape Makers Category -->
+                    <img src="images/home-covers/biasTapeMakers-home.webp" class="site-image-card"
+                        alt="Bias Tape Makers">
+                    <strong>Bias Tape Makers</strong>
+                </div>
+            </a>
+
+            <a href="bobbins.html">
+                <div class="card" data-name="Bobbins">
+                    <!-- CARD IMAGE: Bobbins Category -->
+                    <img src="images/home-covers/bobbins-home.webp" class="site-image-card" alt="Bobbins">
+                    <strong>Bobbins</strong>
+                </div>
+            </a>
+
+            <a href="BoningBraCupsShoulderPads.html">
+                <div class="card" data-name="Boning, Bra, Cups, Shoulder Pads">
+                    <!-- CARD IMAGE: Boning, Bra, Cups, Shoulder Pads Category -->
+                    <img src="images/home-covers/braCups.jpg" class="site-image-card" alt="Boning, Bra, Cups, Shoulder Pads">
+                    <strong>Boning, Bra, Cups, Shoulder Pads</strong>
+                </div>
+            </a>
+
+            <a href="bridal.html">
+                <div class="card" data-name="Bridal">
+                    <!-- CARD IMAGE: Bridal Category -->
+                    <img src="images/home-covers/bridal-home.webp" class="site-image-card" alt="Bridal">
+                    <strong>Bridal</strong>
+                </div>
+            </a>
+
+            <a href="buckles&Broach.html">
+                <div class="card" data-name="Buckles & Broach">
+                    <!-- CARD IMAGE: Buckles & Broach Category -->
+                    <img src="images/home-covers/buckles.webp" class="site-image-card" alt="Buckles & Broach">
+                    <strong>Buckles & Broach</strong>
+                </div>
+            </a>
+
+            <a href="buttons.html">
+                <div class="card" data-name="">
+                    <!-- CARD IMAGE: Buttons Category -->
+                    <img src="images/home-covers/buttons.jpg" class="site-image-card" alt="">
+                    <strong>Buttons</strong>
+                </div>
+            </a>
+
+            <a href="corset.html">
+                <div class="card" data-name="Corset">
+                    <!-- CARD IMAGE: Corset Category -->
+                    <img src="images/home-covers/corset.jpg" class="site-image-card" alt="Corset">
+                    <strong>Corset</strong>
+                </div>
+            </a>
+
+            <a href="curtainAccessories.html">
+                <div class="card" data-name="Curtain Accessories">
+                    <!-- CARD IMAGE: Curtain Accessories Category -->
+                    <img src="images/home-covers/curtains.webp" class="site-image-card" alt="Curtain Accessories">
+                    <strong>Curtain Accessories</strong>
+                </div>
+            </a>
+
+            <a href="crochetAndNetting.html">
+                <div class="card" data-name="Crochet and Netting">
+                    <!-- CARD IMAGE: Crochet and Netting Category -->
+                    <img src="images/home-covers/crochet-home.webp" class="site-image-card" alt="Crochet and Netting">
+                    <strong>Crochet and Knittting</strong>
+                </div>
+            </a>
+
+            <a href="drawcords.html">
+                <div class="card" data-name="Draw Cords">
+                    <!-- CARD IMAGE: Draw Cords Category -->
+                    <img src="images/home-covers/drawCords-home.webp" class="site-image-card" alt="Draw Cords">
+                    <strong>Draw Cords</strong>
+                </div>
+            </a>
+
+            <a href="dressmakersAndQuiltingPins.html">
+                <div class="card" data-name="Dressmakers and Quilting Pins">
+                    <!-- CARD IMAGE: Pins Category -->
+                    <img src="images/home-covers/dressMakersPins-home.webp" class="site-image-card" alt="Pins">
+                    <strong>Dressmakers and Quilting Pins</strong>
+                </div>
+            </a>
+
+            <a href="elastics.html">
+                <div class="card" data-name="Elastics">
+                    <!-- CARD IMAGE: Elastics Category -->
+                    <img src="images/home-covers/elastics-home.webp" class="site-image-card" alt="Elastics">
+                    <strong>Elastics</strong>
+                </div>
+            </a>
+
+            <a href="eyeletsAndPliers.html">
+                <div class="card" data-name="Eyelets and Pliers">
+                    <!-- CARD IMAGE: Eyelets and Pliers Category -->
+                    <img src="images/home-covers/eyelets-home.webp" class="site-image-card" alt="Eyelets and Pliers">
+                    <strong>Eyelets and Pliers</strong>
+                </div>
+            </a>
+
+            <a href="feathers.html">
+                <div class="card" data-name="Feathers">
+                    <!-- CARD IMAGE: Feathers Category -->
+                    <img src="images/home-covers/feathers.jpg" class="site-image-card" alt="Feathers">
+                    <strong>Feathers</strong>
+                </div>
+            </a>
+
+            <a href="fancyTrim.html">
+                <div class="card" data-name="Fancy Trim">
+                    <!-- CARD IMAGE: Fancy Trim Category -->
+                    <img src="images/home-covers/fancyTrims.jpg" class="site-image-card" alt="Fancy Trim">
+                    <strong>Fancy Trim</strong>
+                </div>
+            </a>
+
+            <a href="hookAndLoop.html">
+                <div class="card" data-name="Hook and Loop">
+                    <!-- CARD IMAGE: Hook and Loop Category -->
+                    <img src="images/home-covers/hook_loop-home.webp" class="site-image-card" alt="Hook and Loop">
+                    <strong>Hook and Loop</strong>
+                </div>
+            </a>
+
+            <a href="horsehair.html">
+                <div class="card" data-name="Horsehair">
+                    <!-- CARD IMAGE: Horsehair Category -->
+                    <img src="images/home-covers/horseHair-home.webp" class="site-image-card" alt="Horsehair">
+                    <strong>Horsehair</strong>
+                </div>
+            </a>
+
+            <a href="hotfix.html">
+                <div class="card" data-name="Hotfix Stones and Applicators">
+                    <!-- CARD IMAGE: Hotfix Category -->
+                    <img src="images/home-covers/hotFixApplicators-home.webp" class="site-image-card" alt="Hotfix">
+                    <strong>Hotfix</strong>
+                </div>
+            </a>
+
+            <a href="interlining.html">
+                <div class="card" data-name="Interlining">
+                    <!-- CARD IMAGE: Interlining Category -->
+                    <img src="images/home-covers/interlining.jpg" class="site-image-card" alt="Interlining">
+                    <strong>Interlining</strong>
+                </div>
+            </a>
+
+            <a href="lace.html">
+                <div class="card" data-name="lace">
+                    <!-- CARD IMAGE: Lace Category -->
+                    <img src="images/home-covers/lace.jpg" class="site-image-card" alt="Lace">
+                    <strong>Lace</strong>
+                </div>
+            </a>
+
+            <a href="machineAccessories.html">
+                <div class="card" data-name="Machine Accessories">
+                    <!-- CARD IMAGE: Machine Accessories Category -->
+                    <img src="images/home-covers/machineAccessories.jpg" class="site-image-card"
+                        alt="Machine Accessories">
+                    <strong>Machine Accessories</strong>
+                </div>
+            </a>
+
+            <a href="machineNeedles.html">
+                <div class="card" data-name="Machine Needles">
+                    <!-- CARD IMAGE: Machine Needles Category -->
+                    <img src="images/home-covers/machineNeedles.webp" class="site-image-card" alt="Machine Needles">
+                    <strong>Machine Needles</strong>
+                </div>
+            </a>
+
+            <a href="machineParts.html">
+                <div class="card" data-name="Machine Parts">
+                    <!-- CARD IMAGE: Machine Parts Category -->
+                    <img src="images/home-covers/machineParts.jpg" class="site-image-card" alt="Machine Parts">
+                    <strong>Machine Parts</strong>
+                </div>
+            </a>
+
+            <a href="magneticPressStuds.html">
+                <div class="card" data-name="Magnetic Press Studs">
+                    <!-- CARD IMAGE: Magnetic Press Studs Category -->
+                    <img src="images/home-covers/magneticPressStud.webp" class="site-image-card" alt="Magnetic Studs">
+                    <strong>Magnetic Press Studs</strong>
+                </div>
+            </a>
+
+            <a href="needles.html">
+                <div class="card" data-name="Needles">
+                    <!-- CARD IMAGE: Needles Category -->
+                    <img src="images/home-covers/needles.jpg" class="site-image-card" alt="Needles">
+                    <strong>Needles</strong>
+                </div>
+            </a>
+
+            <a href="pins.html">
+                <div class="card" data-name="pins">
+                    <!-- CARD IMAGE: Pins Category -->
+                    <img src="images/home-covers/pins.jpg" class="site-image-card" alt="pins">
+                    <strong>Pins</strong>
+                </div>
+            </a>
+
+            <a href="patternPaper.html">
+                <div class="card" data-name="Pattern Paper">
+                    <!-- CARD IMAGE: Pattern Paper Category -->
+                    <img src="images/home-covers/patternPaper.jpg" class="site-image-card" alt="Pattern Paper">
+                    <strong>Pattern Paper</strong>
+                </div>
+            </a>
+
+            <a href="plasticFastners.html">
+                <div class="card" data-name="Plastic Fasteners">
+                    <!-- CARD IMAGE: Plastic Fasteners Category -->
+                    <img src="images/home-covers/plasticFastners.jpg" class="site-image-card" alt="Plastic Fasteners">
+                    <strong>Plastic Fasteners</strong>
+                </div>
+            </a>
+
+            <a href="reflectiveTape.html">
+                <div class="card" data-name="Reflective Tape">
+                    <!-- CARD IMAGE: Reflective Tape Category -->
+                    <img src="images/home-covers/reflectiveTape.jpg" class="site-image-card" alt="Reflective Tape">
+                    <strong>Reflective Tape</strong>
+                </div>
+            </a>
+
+            <a href="rotaryCuttersAndMats.html">
+                <div class="card" data-name="Rotary Cutters and Mats">
+                    <!-- CARD IMAGE: Rotary Cutters and Mats Category -->
+                    <img src="images/home-covers/cutters&Mats.jpg" class="site-image-card" alt="Rotary Cutters">
+                    <strong>Rotary Cutters and Mats</strong>
+                </div>
+            </a>
+
+            <a href="rulers.html">
+                <div class="card" data-name="Rulers">
+                    <!-- CARD IMAGE: Rulers Category -->
+                    <img src="images/home-covers/rulers.webp" class="site-image-card" alt="Rulers">
+                    <strong>Rulers</strong>
+                </div>
+            </a>
+
+            <a href="ribbons.html">
+                <div class="card" data-name="Ribbons">
+                    <!-- CARD IMAGE: Ribbons Category -->
+                    <img src="images/home-covers/ribbons.webp" class="site-image-card" alt="Ribbons">
+                    <strong>Ribbons</strong>
+                </div>
+            </a>
+
+            <a href="scissors.html">
+                <div class="card" data-name="Scissors">
+                    <!-- CARD IMAGE: Scissors Category -->
+                    <img src="images/home-covers/scissors.webp" class="site-image-card" alt="Scissors">
+                    <strong>Scissors</strong>
+                </div>
+            </a>
+
+            <a href="sewingMachineAccessories.html">
+                <div class="card" data-name="Sewing Machine Accessories">
+                    <!-- CARD IMAGE: Sewing Machine Accessories Category -->
+                    <img src="images/home-covers/machineAccessories.jpg" class="site-image-card"
+                        alt="Machine Accessories">
+                    <strong>Sewing Machine Accessories</strong>
+                </div>
+            </a>
+
+            <a href="sewingBoxes.html">
+                <div class="card" data-name="Sewing Boxes">
+                    <!-- CARD IMAGE: Sewing Boxes Category -->
+                    <img src="images/home-covers/sewingBoxes.webp" class="site-image-card" alt="Sewing Boxes">
+                    <strong>Sewing Boxes</strong>
+                </div>
+            </a>
+
+            <a href="sewingNotions.html">
+                <div class="card" data-name="Sewing Notions">
+                    <!-- CARD IMAGE: Sewing Notions Category -->
+                    <img src="images/home-covers/sewingNotions.jpg" class="site-image-card" alt="Notions">
+                    <strong>Sewing Notions</strong>
+                </div>
+            </a>
+
+            <a href="sewingThread.html">
+                <div class="card" data-name="Sewing Thread">
+                    <!-- CARD IMAGE: Sewing Thread Category -->
+                    <img src="images/home-covers/sewingThread.jpg" class="site-image-card" alt="Sewing Thread">
+                    <strong>Sewing Thread</strong>
+                </div>
+            </a>
+
+            <a href="sizeLabels.html">
+                <div class="card" data-name="Size Labels">
+                    <!-- CARD IMAGE: Size Labels Category -->
+                    <img src="images/home-covers/sizeLabels.jpg" class="site-image-card" alt="Size Labels">
+                    <strong>Size Labels</strong>
+                </div>
+            </a>
+
+            <a href="snapFasteners.html">
+                <div class="card" data-name="Snap Fasteners">
+                    <!-- CARD IMAGE: Snap Fasteners Category -->
+                    <img src="images/home-covers/snapFastners-home.jpg" class="site-image-card" alt="Snap Fasteners">
+                    <strong>Snap Fasteners</strong>
+                </div>
+            </a>
+
+            <a href="suit&dresscovers.html">
+                <div class="card" data-name="Suit & Dress Covers">
+                    <!-- CARD IMAGE: Suit & Dress Covers Category -->
+                    <img src="images/home-covers/suitCover.jpg" class="site-image-card" alt="Suit & Dress Covers">
+                    <strong>Suit & Dress Covers</strong>
+                </div>
+            </a>
+
+            <a href="tassels.html">
+                <div class="card" data-name="Tassels">
+                    <!-- CARD IMAGE: Tassels Category -->
+                    <img src="images/home-covers/tassels-home.jpg" class="site-image-card" alt="Tassels">
+                    <strong>Tassels</strong>
+                </div>
+            </a>
+
+            <a href="tagging.html">
+                <div class="card" data-name="">
+                    <!-- CARD IMAGE: Tagging Category -->
+                    <img src="images/home-covers/tagging.jpg" class="site-image-card" alt="">
+                    <strong>Tagging</strong>
+                </div>
+            </a>
+
+            <a href="trimmings.html">
+                <div class="card" data-name="Trimmings">
+                    <!-- CARD IMAGE: Trimmings Category -->
+                    <img src="images/home-covers/fringe.jpg" class="site-image-card" alt="Trimmings">
+                    <strong>Trimmings & Fringe</strong>
+                </div>
+            </a>
+
+            <a href="toggles.html">
+                <div class="card" data-name="Toggles">
+                    <!-- CARD IMAGE: Toggles Category -->
+                    <img src="images/home-covers/toggle.jpg" class="site-image-card" alt="Toggles">
+                    <strong>Toggles</strong>
+                </div>
+            </a>
+
+
+            <a href="art&Paint.html">
+                <div class="card" data-name="art & paint">
+                    <!-- CARD IMAGE: Art & Paint Category -->
+                    <img src="images/home-covers/art.jpg" class="site-image-card" alt="Art & Paint">
+                    <strong>Art & Paint</strong>
+                </div>
+            </a>
+
+            <a href="upholsteryRange.html">
+                <div class="card" data-name="Upholstery Range">
+                    <!-- CARD IMAGE: Upholstery Range Category -->
+                    <img src="images/home-covers/upholsteryThread.jpg" class="site-image-card" alt="Upholstery">
+                    <strong>Upholstery Range</strong>
+                </div>
+            </a>
+
+            <a href="wool.html">
+                <div class="card" data-name="Wool">
+                    <!-- CARD IMAGE: Wool Category -->
+                    <img src="images/home-covers/wool.jpg" class="site-image-card" alt="Wool">
+                    <strong>Wool</strong>
+                </div>
+            </a>
+
+            <a href="zips.html">
+                <div class="card" data-name="Zips">
+                    <!-- CARD IMAGE: Zips Category -->
+                    <img src="images/home-covers/zips.jpg" class="site-image-card" alt="Zips">
+                    <strong>Zips</strong>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+    <script>
+        // Cart badge
+        function updateHomeBadge() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const badge = document.getElementById("cartBadge");
+            if (!badge) return;
+            if (cart.length > 0) {
+                badge.textContent = cart.length;
+                badge.classList.add("visible");
+            } else {
+                badge.classList.remove("visible");
+            }
+        }
+        updateHomeBadge();
+
+        // Banner rotation
+        const textItems = document.querySelectorAll('.support-text-item');
+        let currentTextIndex = 0;
+        function rotateText() {
+            textItems[currentTextIndex].classList.remove('active');
+            currentTextIndex = (currentTextIndex + 1) % textItems.length;
+            textItems[currentTextIndex].classList.add('active');
+        }
+        setInterval(rotateText, 5000);
+
+        // Dismiss banner
+        const bannerEl = document.getElementById('support-banner');
+        if (localStorage.getItem('fawz_banner_dismissed')) {
+            if (bannerEl) bannerEl.style.display = 'none';
+        }
+        document.getElementById('dismiss-banner').addEventListener('click', () => {
+            const banner = document.getElementById('support-banner');
+            banner.style.transition = '0.4s';
+            banner.style.opacity = '0';
+            setTimeout(() => { banner.style.display = 'none'; }, 400);
+            localStorage.setItem('fawz_banner_dismissed', '1');
+        });
+
+        // CATEGORY SEARCH
+        const searchInput = document.getElementById('search-input');
+        const categoryCards = document.querySelectorAll('#category-grid .card');
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            categoryCards.forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                card.style.display = name.includes(query) ? 'block' : 'none';
+            });
+        });
+    </script>
+
+    <!-- FOOTER -->
+
+
+
+    <!-- FOOTER -->
+    <footer
+        style="background:rgba(10,10,15,0.97); border-top:2px solid #c5a059; padding:40px 5% 25px; color:rgba(255,255,255,0.6);">
+        <div style="max-width:1100px; margin:0 auto;">
+            <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:30px; margin-bottom:30px;">
+                <div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                        <img src="data:image/jpeg;base64,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"
+                            alt="Fawz Logo" style="height:42px;width:auto;border-radius:6px;">
+                        <div style="font-size:1.2em; font-weight:800; color:#c5a059;">Fawz Haberdashery</div>
+                    </div>
+                    <p style="font-size:0.85em; line-height:1.7;">Your trusted wholesale haberdashery supplier. Premium
+                        quality ribbons, laces, zippers, buttons &amp; more — all at unbeatable South African wholesale
+                        prices.</p>
+                </div>
+                <div>
+                    <div
+                        style="font-weight:700; color:rgba(255,255,255,0.85); margin-bottom:12px; font-size:0.9em; text-transform:uppercase; letter-spacing:1px;">
+                        Quick Links</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; font-size:0.85em;">
+                        <a href="home.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Home</a>
+                        <a href="satin-ribbons.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Satin
+                            Ribbons</a>
+                        <a href="nylon-lace.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Nylon
+                            Lace</a>
+                        <a href="demo_cart.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Cart</a>
+                    </div>
+                </div>
+                <div>
+                    <div
+                        style="font-weight:700; color:rgba(255,255,255,0.85); margin-bottom:12px; font-size:0.9em; text-transform:uppercase; letter-spacing:1px;">
+                        Contact</div>
+                    <div style="font-size:0.85em; line-height:2; color:rgba(255,255,255,0.55);">
+                        📍 45 Azure Road, Lenasia<br>
+                        📞 <a href="tel:0118520061" style="color:rgba(255,255,255,0.55); text-decoration:none;">011 852
+                            0061</a><br>
+                        🕐 Mon–Thu: 8:30am–3:30pm<br>
+                        🕐 Fri: 8:30am–12pm
+                    </div>
+                </div>
+            </div>
+            <div
+                style="border-top:1px solid rgba(255,255,255,0.08); padding-top:20px; text-align:center; font-size:0.78em;">
+                © 2026 Fawz Haberdashery · All rights reserved · <span style="color:rgba(197,160,89,0.7);">Made by
+                    Codepulse Web Dev</span>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

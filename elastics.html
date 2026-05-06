@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elastics | Fawz Haberdashery</title>
+    <link rel="stylesheet" href="global-images.css">
+
+    <style>
+        :root { 
+            --fawz-red: #e31e24; 
+            --fawz-dark: #1a1a1a; 
+            --fawz-grey: #f8f8f8;
+            --border: #eeeeee;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #ffffff;
+            color: var(--fawz-dark);
+        }
+
+        header {
+            position: sticky; top: 0;
+            background: #ffffff;
+            padding: 15px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 3px solid var(--fawz-red);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+        header h1 { color: var(--fawz-dark); font-size: 1.4em; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        header h1 span { color: var(--fawz-red); }
+        nav a { color: var(--fawz-dark); margin-left: 20px; text-decoration: none; font-weight: 700; font-size: 0.9em; }
+
+        .section { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
+        .section h3 { text-align: center; font-size: 2.2em; margin-bottom: 50px; text-transform: uppercase; }
+        .section h3::after { content: ''; display: block; width: 60px; height: 4px; background: var(--fawz-red); margin: 10px auto; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .card:hover { 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: var(--fawz-red);
+            transform: translateY(-5px);
+        }
+        .card strong { display: block; color: var(--fawz-dark); font-size: 1.1em; text-transform: uppercase; margin-top: 15px;}
+
+        /* MODAL */
+        .modal {
+            display: none; position: fixed; z-index: 2000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white; margin: 8vh auto; width: 90%; max-width: 1000px;
+            height: 75vh; display: flex; border-radius: 8px; overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2); position: relative;
+        }
+        .modal-left { flex: 1; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; border-right: 1px solid var(--border); }
+        .modal-right { flex: 1.2; display: flex; flex-direction: column; }
+        .selection-area { padding: 40px; flex: 1; overflow-y: auto; }
+        .selection-area h2 { color: var(--fawz-red); margin-top: 0; text-transform: uppercase; font-size: 1.6em; }
+
+        label { display: block; margin: 20px 0 8px; font-weight: bold; color: #555; font-size: 0.75em; text-transform: uppercase; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 1em; background: var(--fawz-grey); }
+
+        .site-option-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .site-option-item { border: 1px solid #ddd; padding: 10px; text-align: center; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
+        .site-option-item.selected { border-color: var(--fawz-red); background: #fff1f1; color: var(--fawz-red); font-weight: bold; }
+
+        #price { font-size: 2.2em; font-weight: 900; color: var(--fawz-dark); margin: 25px 0; letter-spacing: 2px; }
+        .btn-add { width: 100%; background: var(--fawz-red); border: none; padding: 18px; color: white; font-weight: 800; text-transform: uppercase; cursor: pointer; border-radius: 4px; }
+
+        .cart-summary { background: var(--fawz-grey); padding: 20px 40px; border-top: 1px solid #ddd; max-height: 180px; overflow-y: auto; }
+        .cart-summary h4 { margin: 0 0 10px; color: var(--fawz-red); font-size: 0.85em; text-transform: uppercase; }
+        .cart-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0; font-size: 0.85em; }
+        .close-x { position: absolute; right: 25px; top: 20px; font-size: 32px; cursor: pointer; color: #bbb; z-index: 10; }
+
+        .color-swatch {
+            width: 30px; height: 30px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin: 0 auto 5px; border: 1px solid rgba(0,0,0,0.1);
+        }
+    </style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+
+<body>
+
+<header>
+    <h1>Fawz <span>Haberdashery</span></h1>
+    <nav>
+        <a href="home.html">Home</a>
+        <a href="demo_cart.html">View Cart</a>
+    </nav>
+</header>
+
+<div class="section">
+    <h3>Elastics</h3>
+    <div class="grid">
+        <div class="card" onclick="openModal('Shirring Elastic', 'images/elastics/shirring.jpg')">
+            <img src="images/elastics/shirring.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Shirring+Elastic'">
+            <strong>Shirring Elastic</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Cord Elastic', 'images/elastics/cord.jpg')">
+            <img src="images/elastics/cord.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Cord+Elastic'">
+            <strong>Cord Elastic</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Elastic Rolls', 'images/elastics/rolls.jpg')">
+            <img src="images/elastics/rolls.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Elastic+Rolls'">
+            <strong>Elastic Rolls</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Hat Elastic', 'images/elastics/hat.jpg')">
+            <img src="images/elastics/hat.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Hat+Elastic'">
+            <strong>Hat Elastic (Round)</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Printed Elastic', 'images/elastics/printed.jpg')">
+            <img src="images/elastics/printed.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Printed+Elastic'">
+            <strong>Printed Elastic</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Shock Cord', 'images/elastics/shock.jpg')">
+            <img src="images/elastics/shock.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Shock+Cord'">
+            <strong>Shock Cord</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Elastic Braid', 'images/elastics/braid.jpg')">
+            <img src="images/elastics/braid.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Elastic+Braid'">
+            <strong>Elastic Braid</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Non Curl Elastic', 'images/elastics/noncurl.jpg')">
+            <img src="images/elastics/noncurl.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Non+Curl+Elastic'">
+            <strong>Non Curl Elastic</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Button Hole Elastic', 'images/elastics/buttonhole.jpg')">
+            <img src="images/elastics/buttonhole.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Button+Hole+Elastic'">
+            <strong>Button Hole Elastic</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Draw Cord Elastics', 'images/elastics/drawcord.jpg')">
+            <img src="images/elastics/drawcord.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Draw+Cord+Elastics'">
+            <strong>Draw Cord Elastics</strong>
+        </div>
+    </div>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-x" onclick="closeModal()">&times;</span>
+        <div class="modal-left">
+            <img id="modal-img" class="site-image-popup" src="">
+        </div>
+        <div class="modal-right">
+            <div class="selection-area">
+                <h2 id="modal-title">Product</h2>
+                <div id="dynamic-options"></div>
+                <label>Quantity</label>
+                <input type="number" id="qty" value="1" min="1">
+                <p id="price">R ####</p>
+                <button class="btn-add" onclick="addToCart()">Add to Cart</button>
+            </div>
+            <div class="cart-summary">
+                <h4>Recent Additions</h4>
+                <div id="cart-list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentCategory = "";
+    let selectedProduct = "";
+
+    function openModal(category, imgPath){
+        currentCategory = category;
+        selectedProduct = null;
+        document.getElementById("modal-title").textContent = category;
+        document.getElementById("modal-img").src = imgPath;
+        
+        const optionsDiv = document.getElementById("dynamic-options");
+        optionsDiv.innerHTML = ""; 
+
+        let templateId = "";
+        if(category === 'Shirring Elastic') templateId = "tpl-shirring";
+        else if(category === 'Cord Elastic') templateId = "tpl-cord";
+        else if(category === 'Elastic Rolls') templateId = "tpl-rolls";
+        else if(category === 'Hat Elastic') templateId = "tpl-hat";
+        else if(category === 'Printed Elastic') templateId = "tpl-printed";
+        else if(category === 'Shock Cord') templateId = "tpl-shock";
+        else if(category === 'Elastic Braid') templateId = "tpl-braid";
+        else if(category === 'Non Curl Elastic') templateId = "tpl-noncurl";
+        else if(category === 'Button Hole Elastic') templateId = "tpl-buttonhole";
+        else if(category === 'Draw Cord') templateId = "tpl-drawCord";
+        
+
+
+        if(templateId) {
+            const tpl = document.getElementById(templateId);
+            if(tpl) optionsDiv.appendChild(tpl.content.cloneNode(true));
+        }
+
+        document.getElementById("modal").style.display = "block";
+        renderCart();
+    }
+
+    function selectOption(element, productName) {
+        selectedProduct = productName;
+        element.parentElement.querySelectorAll('.site-option-item').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    function closeModal() { document.getElementById("modal").style.display = "none"; }
+
+    function renderCart() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const container = document.getElementById("cart-list");
+        container.innerHTML = cart.length ? "" : "<p style='color:#999; font-size:0.8em;'>Cart empty.</p>";
+        cart.slice(-3).reverse().forEach(item => {
+            container.innerHTML += `<div class="cart-item"><span>${item.selection} x${item.qty}</span><strong>R ####</strong></div>`;
+        });
+    }
+
+    function addToCart(){
+        if (!selectedProduct) { alert("Please select an option first!"); return; }
+        let extraDetails = "";
+        const selects = document.querySelectorAll('#dynamic-options select');
+        selects.forEach(select => { extraDetails += " (" + select.value + ")"; });
+
+        const selection = currentCategory + " - " + selectedProduct + extraDetails;
+        const qty = document.getElementById("qty").value;
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.push({ category: currentCategory, selection: selection, qty: qty });
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+        closeModal();
+    }
+
+    window.onclick = e => { if(e.target == document.getElementById("modal")) closeModal(); }
+</script>
+
+<template id="tpl-shirring">
+    <label>Select Type</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'Carded (12/box)')"><span>Carded (12/box)</span></div>
+        <div class="site-option-item" onclick="selectOption(this, 'Regular (36/box)')"><span>Regular (36/box)</span></div>
+    </div>
+    <label>Select Color</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'White')"><span>White</span></div>
+        <div class="site-option-item" onclick="selectOption(this, 'Black')"><span>Black</span></div>
+    </div>
+</template>
+
+<template id="tpl-cord">
+    <label>Select Cord Size (2.75m per card | 20 cards per box)</label>
+    <select>
+        <option>6 Cord</option>
+        <option>8 Cord</option>
+        <option>10 Cord</option>
+        <option>12 Cord</option>
+    </select>
+    <label>Select Color</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'White')"><span>White</span></div>
+        <div class="site-option-item" onclick="selectOption(this, 'Black')"><span>Black</span></div>
+    </div>
+</template>
+
+<template id="tpl-rolls">
+    <label>Select Width (25m Roll)</label>
+    <select>
+        <option>20mm</option><option>25mm</option><option>32mm</option>
+        <option>38mm</option><option>50mm</option><option>75mm</option>
+        <option>100mm</option><option>120mm</option>
+    </select>
+    <label>Select Color</label>
+    <div class="site-option-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="site-option-item" onclick="selectOption(this, 'White')"><div class="color-swatch" style="background:#fff;border:1px solid #ddd"></div>White</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Black')"><div class="color-swatch" style="background:#000"></div>Black</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Grey')"><div class="color-swatch" style="background:#808080"></div>Grey</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Bottle')"><div class="color-swatch" style="background:#006A4E"></div>Bottle</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Red')"><div class="color-swatch" style="background:#e31e24"></div>Red</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Navy')"><div class="color-swatch" style="background:#000080"></div>Navy</div>
+    </div>
+</template>
+
+<template id="tpl-hat">
+    <label>Select Size</label>
+    <select><option>1.5mm</option><option>1.8mm</option></select>
+    <label>Select Packaging (White or Black)</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, '200m Roll')"><span>200m Roll</span></div>
+        <div class="site-option-item" onclick="selectOption(this, 'Carded (20 cards/box)')"><span>Carded (20/box)</span></div>
+    </div>
+</template>
+
+<template id="tpl-printed">
+    <label>Select Pattern (25m Roll)</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'Leopard')"><span>Leopard</span></div>
+        <div class="site-option-item" onclick="selectOption(this, 'Zebra')"><span>Zebra</span></div>
+    </div>
+</template>
+
+<template id="tpl-shock">
+    <label>Select Width (25m Roll)</label>
+    <select><option>3mm</option><option>6mm</option><option>9mm</option></select>
+    <label>Select Color</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'White')"><span>White</span></div>
+        <div class="site-option-item" onclick="selectOption(this, 'Black')"><span>Black</span></div>
+        <div class="site-option-item" onclick="selectOption(this, 'Navy')"><span>Navy</span></div>
+    </div>
+</template>
+
+<template id="tpl-braid">
+    <label>Select Width (100m Roll)</label>
+    <select><option>4mm</option><option>5mm</option><option>6mm</option><option>7.5mm</option><option>10mm</option><option>12mm</option><option>14mm</option><option>16mm</option></select>
+    <label>Select Color</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'White')"><span>White</span></div>
+        <div class="site-option-item" onclick="selectOption(this, 'Black')"><span>Black</span></div>
+    </div>
+</template>
+
+<template id="tpl-noncurl">
+    <label>Select Width (25m Roll)</label>
+    <div class="site-option-grid">
+        <select><option>20mm</option><option>25mm</option><option>32mm</option><option>38mm</option></select>
+        
+</template>
+
+<template id="tpl-buttonhole">
+    <label>Select Width (25m Roll)</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, '20mm')"><span>20mm</span></div>
+       
+    </div>
+</template>
+<template id="tpl-drawCord">
+    <label>Select Width (25m Roll)</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, '20mm')"><span>32mm</span></div>
+       
+    </div>
+</template>
+
+</body>
+</html>

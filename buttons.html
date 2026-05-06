@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buttons | Fawz Haberdashery</title>
+    <style>
+        :root { 
+            --fawz-red: #e31e24; 
+            --fawz-dark: #1a1a1a; 
+            --fawz-grey: #f8f8f8;
+            --border: #eeeeee;
+        }
+
+        body { margin: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; background: #ffffff; color: var(--fawz-dark); }
+        header { position: sticky; top: 0; background: #ffffff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--fawz-red); box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000; }
+        header h1 { color: var(--fawz-dark); font-size: 1.4em; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        header h1 span { color: var(--fawz-red); }
+        nav a { color: var(--fawz-dark); margin-left: 20px; text-decoration: none; font-weight: 700; font-size: 0.9em; }
+
+        .section { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
+        .section h3 { text-align: center; font-size: 2.2em; margin-bottom: 50px; text-transform: uppercase; }
+        .section h3::after { content: ''; display: block; width: 60px; height: 4px; background: var(--fawz-red); margin: 10px auto; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .card { background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .card img { width: 100%; height: 200px; object-fit: contain; margin-bottom: 15px; }
+        .card:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: var(--fawz-red); transform: translateY(-3px); }
+        .card strong { display: block; color: var(--fawz-dark); font-size: 1em; text-transform: uppercase; }
+
+        /* MODAL SYSTEM */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
+        .modal-content { background: white; margin: 5vh auto; width: 95%; max-width: 1000px; height: 85vh; display: flex; border-radius: 8px; overflow: hidden; position: relative; }
+        .modal-left { flex: 1; background: #fafafa; display: flex; align-items: center; justify-content: center; padding: 20px; border-right: 1px solid var(--border); }
+        .modal-left img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .modal-right { flex: 1.2; display: flex; flex-direction: column; position: relative; }
+        .selection-area { padding: 30px; flex: 1; overflow-y: auto; }
+        
+        #next-steps { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: white; z-index: 3000; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; box-sizing: border-box; }
+        .next-btn { width: 100%; max-width: 300px; padding: 15px; margin: 10px 0; border: 1px solid #ddd; background: var(--fawz-grey); cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        .next-btn.primary { background: var(--fawz-red); color: white; border: none; }
+
+        label { display: block; margin: 15px 0 5px; font-weight: bold; color: #555; font-size: 0.75em; text-transform: uppercase; }
+        select, input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: var(--fawz-grey); font-size: 1em; }
+
+        .site-option-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px; }
+        .site-option-item { border: 1px solid #ddd; padding: 8px; text-align: center; border-radius: 4px; cursor: pointer; font-size: 0.8em; transition: 0.2s; }
+        .site-option-item.selected { border-color: var(--fawz-red); background: #fff1f1; font-weight: bold; }
+        .color-swatch { width: 30px; height: 30px; border-radius: 50%; margin: 0 auto 5px; border: 1px solid rgba(0,0,0,0.1); }
+        
+        .btn-add { width: 100%; background: var(--fawz-red); border: none; padding: 15px; color: white; font-weight: 800; text-transform: uppercase; cursor: pointer; margin-top: 20px; }
+        .close-x { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #bbb; z-index: 3100; }
+    </style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+<body>
+
+<header>
+    <h1>Fawz <span>Haberdashery</span></h1>
+    <nav><a href="home.html">Home</a><a href="cart.html">View Cart</a></nav>
+</header>
+
+<div class="section">
+    <h3>Button Collection</h3>
+    <div class="grid">
+        <div class="card" onclick="openModal('Shirt Buttons', 'shirt', 'tpl-shirt')">
+            <img src="images/buttons/shirt/2Hole.jpg" onerror="this.src='https://via.placeholder.com/300x200?text=Shirt+Buttons'">
+            <strong>Shirt Buttons</strong>
+        </div>
+        <div class="card" onclick="openModal('Fish Eye Buttons', 'fisheye', 'tpl-fisheye')">
+            <img src="images/buttons/fishEye/colorSheet.jpg" onerror="this.src='https://via.placeholder.com/300x200?text=Fish+Eye'">
+            <strong>Fish Eye Buttons</strong>
+        </div>
+        <div class="card" onclick="openModal('Work Wear Buttons', 'workwear', 'tpl-workwear')">
+            <img src="images/buttons/workWear/workWearFawz.jpg" onerror="this.src='https://via.placeholder.com/300x200?text=Work+Wear'">
+            <strong>Work Wear Buttons</strong>
+        </div>
+        <div class="card" onclick="openModal('Denim Jeans Buttons', 'denim', 'tpl-denim')">
+            <img src="images/buttons/denim/denimButtons.jpg" onerror="this.src='https://via.placeholder.com/300x200?text=Denim+Jeans'">
+            <strong>Denim Jeans Buttons</strong>
+        </div>
+        <div class="card" onclick="openModal('Aluminium Backs', 'alum', 'tpl-alum')">
+            <img src="images/buttons/selfCover/aluminium+plastic.jpg" onerror="this.src='https://via.placeholder.com/300x200?text=Alum+Backs'">
+            <strong>Aluminium Backs</strong>
+        </div>
+        <div class="card" onclick="openModal('Cover Button Moulds', 'moulds', 'tpl-moulds')">
+            <img src="images/buttons/selfCover/selfCover.jpg" onerror="this.src='https://via.placeholder.com/300x200?text=Moulds'">
+            <strong>Cover Button Moulds</strong>
+        </div>
+        <div class="card" onclick="openModal('Blazer Buttons', 'blazer', 'tpl-blazer')">
+            <img src="images/buttons/blazer/blazer.jpg" onerror="this.src='https://via.placeholder.com/300x200?text=Blazer'">
+            <strong>Blazer Buttons</strong>
+        </div>
+        <div class="card" onclick="openModal('Golf Shirt Buttons', 'golf', 'tpl-golf')">
+            <img src="images/buttons/golfShirt/button.webp" onerror="this.src='https://via.placeholder.com/300x200?text=Golf+Shirt'">
+            <strong>Golf Shirt Buttons</strong>
+        </div>
+        <div class="card" onclick="openModal('Self Cover Buttons', 'selfcover', 'tpl-selfcover')">
+            <img src="images/buttons/selfCover/selfCover.jpg" onerror="this.src='https://via.placeholder.com/300x200?text=Self+Cover'">
+            <strong>Self Cover Buttons</strong>
+        </div>
+        <div class="card" onclick="openModal('Button Presses', 'presses', 'tpl-presses')">
+            <img src="images/buttons/selfCover/selfCover.jpg" onerror="this.src='https://via.placeholder.com/300x200?text=Presses'">
+            <strong>Button Presses</strong>
+        </div>
+        <div class="card" onclick="openModal('Triangle Buttons', 'triangle', 'tpl-triangle')">
+            <img src="images/buttons/triangle/15mm.jpg" onerror="this.src='https://via.placeholder.com/300x200?text=Triangle'">
+            <strong>Triangle Buttons</strong>
+        </div>
+    </div>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-x" onclick="closeModal()">&times;</span>
+        <div class="modal-left"><img id="modal-img" src=""></div>
+        <div class="modal-right">
+            <div class="selection-area">
+                <h2 id="modal-title" style="color:var(--fawz-red); text-transform:uppercase;">Product</h2>
+                <div id="dynamic-options"></div>
+                <label>Quantity</label>
+                <input type="number" id="qty" value="1" min="1">
+                <button class="btn-add" onclick="addToCart()">Add to Cart</button>
+            </div>
+            <div id="next-steps">
+                <h2 style="color:var(--fawz-red)">Added to Cart!</h2>
+                <p>What would you like to do next?</p>
+                <button class="next-btn primary" onclick="resetForNewColor()">Different Color (Same Size)</button>
+                <button class="next-btn" onclick="resetForNewSize()">Choose New Size</button>
+                <button class="next-btn" onclick="location.href='home.html'">Back to Home</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TEMPLATES -->
+<template id="tpl-shirt">
+    <label>Variant</label>
+    <select id="opt-variant"><option>2 Hole</option><option>4 Hole</option></select>
+    <label>Size</label>
+    <select id="opt-size" onchange="updateImageBySize()"><option value="11mm">11mm</option><option value="12.5mm">12.5mm</option></select>
+    <label>Select Color</label>
+    <div class="site-option-grid" id="inject-30-colors"></div>
+</template>
+
+<template id="tpl-fisheye">
+    <label>Size (1000 pcs per pack)</label>
+    <select id="opt-size" onchange="updateImageBySize()">
+        <option value="11.5mm">11.5mm</option><option value="15mm">15mm</option>
+        <option value="16.5mm">16.5mm</option><option value="19mm">19mm</option>
+    </select>
+    <label>Select Color</label>
+    <div class="site-option-grid" id="inject-30-colors"></div>
+</template>
+
+<template id="tpl-workwear">
+    <label>Size</label>
+    <select id="opt-size" onchange="updateImageBySize()">
+        <option value="12.5mm">12.5mm</option><option value="15mm">15mm</option><option value="16.5mm">16.5mm</option>
+        <option value="19mm">19mm</option><option value="22mm">22mm</option><option value="25mm">25mm</option>
+    </select>
+    <label>Select Color</label>
+    <div class="site-option-grid" id="inject-30-colors"></div>
+</template>
+
+<template id="tpl-denim">
+    <label>Choose Design</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'Design 1', 'design1')">Design 1</div>
+       
+    </div>
+</template>
+
+<template id="tpl-alum">
+    <label>Size (1000 per pack)</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'Size 28', '28')">Size 28</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Size 36', '36')">Size 36</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Size 44', '44')">Size 44</div>
+    </div>
+</template>
+
+<template id="tpl-moulds">
+    <label>Size</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'Size 28', '28')">Size 28</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Size 36', '36')">Size 36</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Size 44', '44')">Size 44</div>
+    </div>
+</template>
+
+<template id="tpl-selfcover">
+    <label>Select Size</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, '11mm', '11mm')">11mm (10 Sets)</div>
+        <div class="site-option-item" onclick="selectOption(this, '15mm', '15mm')">15mm (10 Sets)</div>
+        <div class="site-option-item" onclick="selectOption(this, '18mm', '18mm')">18mm (10 Sets)</div>
+        <div class="site-option-item" onclick="selectOption(this, '22mm', '22mm')">22mm (10 Sets)</div>
+        <div class="site-option-item" onclick="selectOption(this, '28mm', '28mm')">28mm (10 Sets)</div>
+        <div class="site-option-item" onclick="selectOption(this, '29mm', '29mm')">29mm (5 Sets)</div>
+        <div class="site-option-item" onclick="selectOption(this, '38mm', '38mm')">38mm (2 Sets)</div>
+    </div>
+</template>
+
+<template id="tpl-blazer">
+    <label>Finish</label>
+    <select id="opt-finish"><option>Gold</option><option>Silver</option></select>
+    <label>Variant</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'Var 1', 'var1')">Variant 1</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Var 2', 'var2')">Variant 2</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Var 3', 'var3')">Variant 3</div>
+    </div>
+</template>
+
+<template id="tpl-golf">
+    <label>Size: 12.5mm</label>
+    <label>Select Color</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'White')"><div class="color-swatch" style="background:#fff"></div>White</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Black')"><div class="color-swatch" style="background:#000"></div>Black</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Navy')"><div class="color-swatch" style="background:#000080"></div>Navy</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Grey')"><div class="color-swatch" style="background:#808080"></div>Grey</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Powder')"><div class="color-swatch" style="background:#B0E0E6"></div>Powder</div>
+    </div>
+</template>
+
+<template id="tpl-triangle">
+    <label>Size</label>
+    <select id="opt-size" onchange="updateImageBySize()">
+        <option value="12.5mm">12.5mm</option><option value="15mm">15mm</option>
+        <option value="19mm">19mm</option><option value="25mm">25mm</option>
+    </select>
+    <label>Select Color</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'Black')"><div class="color-swatch" style="background:#000"></div>Black</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Red')"><div class="color-swatch" style="background:red"></div>Red</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Royal')"><div class="color-swatch" style="background:blue"></div>Royal</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Cream')"><div class="color-swatch" style="background:#FFFDD0"></div>Cream</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Yellow')"><div class="color-swatch" style="background:yellow"></div>Yellow</div>
+    </div>
+</template>
+
+<template id="tpl-presses">
+    <label>Machine Model</label>
+    <div class="site-option-grid">
+        <div class="site-option-item" onclick="selectOption(this, 'Standard Press', 'standard')">Standard</div>
+        <div class="site-option-item" onclick="selectOption(this, 'Compact Press', 'compact')">Compact</div>
+    </div>
+</template>
+
+<template id="30-colors-source">
+    <div class="site-option-item" onclick="selectOption(this, 'White-1')"><div class="color-swatch" style="background:#fff"></div>White-1</div>
+    <div class="site-option-item" onclick="selectOption(this, 'Black-2')"><div class="color-swatch" style="background:#000"></div>Black-2</div>
+    <div class="site-option-item" onclick="selectOption(this, 'Cream-6')"><div class="color-swatch" style="background:#FFFDD0"></div>Cream-6</div>
+    <div class="site-option-item" onclick="selectOption(this, 'Red-11')"><div class="color-swatch" style="background:red"></div>Red-11</div>
+    <div class="site-option-item" onclick="selectOption(this, 'Brown-17')"><div class="color-swatch" style="background:#8B4513"></div>Brown-17</div>
+    <div class="site-option-item" onclick="selectOption(this, 'Royal-9')"><div class="color-swatch" style="background:blue"></div>Royal-9</div>
+    <div class="site-option-item" onclick="selectOption(this, 'Navy-10')"><div class="color-swatch" style="background:#000080"></div>Navy-10</div>
+    <div class="site-option-item" onclick="selectOption(this, 'Lemon-4')"><div class="color-swatch" style="background:#FFF700"></div>Lemon-4</div>
+    <div class="site-option-item" onclick="selectOption(this, 'Dk Grey-32')"><div class="color-swatch" style="background:#A9A9A9"></div>Dk Grey-32</div>
+    <div class="site-option-item" onclick="selectOption(this, 'Pink-2')"><div class="color-swatch" style="background:pink"></div>Pink-2</div>
+</template>
+
+<!-- IMAGE ASSET REGISTRY -->
+<div id="image-registry" style="display: none;">
+    <img id="asset-shirt-11mm" src="images/buttons/shirt/2Hole.jpg">
+    <img id="asset-shirt-12.5mm" src="images/buttons/shirt/4Hole.jpg">
+
+    <img id="asset-fisheye-11.5mm" src="images/buttons/fishEye/11.5.webp">
+    <img id="asset-fisheye-15mm" src="images/buttons/fishEye/15mm.webp">
+    <img id="asset-fisheye-16.5mm" src="images/buttons/fishEye/16.5.webp">
+    <img id="asset-fisheye-19mm" src="images/buttons/fishEye/19mm.webp">
+
+    <img id="asset-workwear-12.5mm" src="images/buttons/workWear/workWearFawz.jpg">
+    <img id="asset-workwear-15mm" src="images/buttons/workWear/workWearFawz.jpg">
+    <img id="asset-workwear-16.5mm" src="images/buttons/workWear/workWearFawz.jpg">
+    <img id="asset-workwear-19mm" src="images/buttons/workWear/workWearFawz.jpg">
+    <img id="asset-workwear-22mm" src="images/buttons/workWear/workWearFawz.jpg">
+    <img id="asset-workwear-25mm" src="images/buttons/workWear/workWearFawz.jpg">
+
+    <img id="asset-denim-design1" src="images/buttons/denim/denimButtons.jpg">
+   
+
+    <img id="asset-alum-28" src="images/buttons/selfCover/aluminium+plastic.jpg">
+    <img id="asset-alum-36" src="images/buttons/selfCover/aluminium+plastic.jpg">
+    <img id="asset-alum-44" src="images/buttons/selfCover/aluminium+plastic.jpg">
+
+    <img id="asset-moulds-28" src="images/buttons/selfCover/coverButtonMoulds.jpg">
+    <img id="asset-moulds-36" src="images/buttons/selfCover/coverButtonMoulds.jpg">
+    <img id="asset-moulds-44" src="images/buttons/selfCover/coverButtonMoulds.jpg">
+
+    <img id="asset-blazer-var1" src="images/buttons/blazer/typeA.jpg">
+    <img id="asset-blazer-var2" src="images/buttons/blazer/typeB.jpg">
+    <img id="asset-blazer-var3" src="images/buttons/blazer/typeC.jpg">
+
+    <img id="asset-triangle-12.5mm" src="images/buttons/triangle/12.5mm.jpg">
+    <img id="asset-triangle-15mm" src="images/buttons/triangle/15mm.jpg">
+    <img id="asset-triangle-19mm" src="images/buttons/triangle/19mm.jpg">
+    <img id="asset-triangle-25mm" src="images/buttons/triangle/25mm.jpg">
+</div>
+
+<script>
+    let currentCategory = "";
+    let categorySlug = ""; 
+    let selectedOptionVal = "";
+
+    function openModal(category, slug, tplId){
+        currentCategory = category;
+        categorySlug = slug;
+        selectedOptionVal = "";
+        
+        document.getElementById("modal-title").textContent = category;
+        document.getElementById("next-steps").style.display = "none";
+        
+        const optionsDiv = document.getElementById("dynamic-options");
+        optionsDiv.innerHTML = "";
+        const tpl = document.getElementById(tplId);
+        if(tpl) optionsDiv.appendChild(tpl.content.cloneNode(true));
+
+        const colorInject = document.getElementById('inject-30-colors');
+        if(colorInject) {
+            const colors = document.getElementById('30-colors-source');
+            colorInject.appendChild(colors.content.cloneNode(true));
+        }
+
+        updateImageBySize();
+        document.getElementById("modal").style.display = "block";
+    }
+
+    function updateImageBySize() {
+        const sizeEl = document.getElementById("opt-size");
+        const sizeValue = sizeEl ? sizeEl.value : "default";
+        
+        // Target registry ID: asset-slug-size (e.g. asset-shirt-11mm)
+        const registryId = `asset-${categorySlug}-${sizeValue}`;
+        const registryImg = document.getElementById(registryId);
+        const modalImg = document.getElementById("modal-img");
+
+        if (registryImg) {
+            modalImg.src = registryImg.src;
+        } else {
+            // Fallback for categories without size assets or missing registry entries
+            modalImg.src = `https://via.placeholder.com/400?text=${currentCategory}`;
+        }
+
+        modalImg.onerror = function() {
+            this.src = `https://via.placeholder.com/400?text=${currentCategory}+${sizeValue}`;
+        };
+    }
+
+    function selectOption(el, val, imgSuffix) {
+        selectedOptionVal = val;
+        el.parentElement.querySelectorAll('.site-option-item').forEach(i => i.classList.remove('selected'));
+        el.classList.add('selected');
+
+        // Update image if suffix is provided (Denim/Blazer/Moulds)
+        if(imgSuffix) {
+            const registryId = `asset-${categorySlug}-${imgSuffix}`;
+            const registryImg = document.getElementById(registryId);
+            if(registryImg) {
+                document.getElementById("modal-img").src = registryImg.src;
+            }
+        }
+    }
+
+    function closeModal() { document.getElementById("modal").style.display = "none"; }
+
+    function addToCart() {
+        const sizeEl = document.getElementById("opt-size");
+        const size = sizeEl ? sizeEl.value : "";
+        const qty = document.getElementById("qty").value;
+        const variantEl = document.getElementById("opt-variant");
+        const variant = variantEl ? " - " + variantEl.value : "";
+        
+        if(!selectedOptionVal && document.querySelector('.site-option-item')) {
+            alert("Please select an option/color first!");
+            return;
+        }
+
+        const fullSelection = `${currentCategory} (${size}${variant}) - ${selectedOptionVal}`;
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.push({ item: fullSelection, qty: qty });
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        document.getElementById("next-steps").style.display = "flex";
+    }
+
+    function resetForNewColor() {
+        document.getElementById("next-steps").style.display = "none";
+        document.querySelectorAll('.site-option-item').forEach(i => i.classList.remove('selected'));
+        selectedOptionVal = "";
+    }
+
+    function resetForNewSize() {
+        document.getElementById("next-steps").style.display = "none";
+        const sizeSelect = document.getElementById("opt-size");
+        if(sizeSelect) {
+            sizeSelect.selectedIndex = 0;
+            updateImageBySize();
+        }
+        resetForNewColor();
+    }
+
+    window.onclick = e => { if(e.target == document.getElementById("modal")) closeModal(); }
+</script>
+</body>
+</html>

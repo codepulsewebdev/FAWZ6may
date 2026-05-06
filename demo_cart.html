@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Cart | Fawz Haberdashery</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+    body{background:#f4f6f9;padding:30px 15px; color: #333;}
+
+    .cart-container { max-width: 800px; margin: auto; }
+    h1 { margin-bottom: 20px; color: #e60000; border-bottom: 2px solid #e60000; padding-bottom: 10px; }
+
+    /* back link */
+    .back-link { display:inline-flex; align-items:center; gap:6px; color:#555; text-decoration:none; font-size:0.88em; font-weight:600; margin-bottom:20px; padding:8px 14px; border:1px solid #ddd; border-radius:20px; background:white; transition:all 0.2s; }
+    .back-link:hover { border-color:#e60000; color:#e60000; }
+
+    .cart-item {
+        background: white;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .item-details strong { color: #e60000; font-size: 0.85em; text-transform: uppercase; }
+    .item-details { flex: 1; min-width: 200px; }
+    .item-line-total { font-weight: 800; color: #047857; font-size: 1em; white-space: nowrap; }
+
+    button { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    .remove { background: #fee2e2; color: #991b1b; font-size: 0.8em; }
+    .remove:hover { background: #fecaca; }
+    .clear { background: #6b7280; color: white; margin-bottom: 20px; }
+
+    .cart-summary {
+        background: white;
+        border-radius: 10px;
+        padding: 18px 20px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .grand-total { font-size: 1.3em; font-weight: 900; color: #047857; }
+    .grand-total span { font-size: 0.7em; color: #888; font-weight: 600; margin-right: 5px; }
+
+    form {
+        margin-top: 20px;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border-top: 5px solid #e60000;
+    }
+
+    h2 { margin-bottom: 15px; font-size: 1.2em; }
+    label { display: block; margin-top: 10px; font-weight: 600; font-size: 0.9em; }
+    
+    input {
+        width: 100%;
+        padding: 12px;
+        margin: 5px 0 15px 0;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fafafa;
+        font-family: inherit;
+        font-size: 0.95em;
+    }
+
+    .place-order {
+        background: #e60000;
+        color: white;
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1em;
+        margin-top: 10px;
+        font-family: inherit;
+    }
+    .place-order:hover { background: #c20000; }
+    .place-order:disabled { background: #ccc; cursor: not-allowed; }
+@media(max-width:600px){
+    body{padding:16px 10px;}
+    .cart-container{max-width:100%;}
+    h1{font-size:1.3em;}
+    .cart-item{padding:12px;gap:8px;}
+    .item-details{min-width:unset;}
+    .grand-total{font-size:1.1em;}
+    form{padding:18px 14px;}
+    input{padding:10px 12px;font-size:0.9em;}
+    .place-order{font-size:1em;padding:13px;}
+    footer > div > div:first-child{grid-template-columns:1fr !important;}
+    footer{padding:28px 5% 18px !important;}
+}
+</style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+<body>
+
+<div class="cart-container">
+
+    <a href="javascript:history.back()" class="back-link">← Back</a>
+
+    <h1>🛒 Your Order</h1>
+
+    <div id="cartContainer"></div>
+
+    <div class="cart-summary" id="cartSummary" style="display:none;">
+        <div>
+            <button class="clear" onclick="clearCart()" style="margin-bottom:0;">Clear All Items</button>
+        </div>
+        <div class="grand-total"><span>Grand Total</span><span id="grandTotalDisplay">R0</span></div>
+    </div>
+
+    <form id="orderForm">
+        <h2>Checkout Details</h2>
+        <p style="font-size: 0.8em; color: #666; margin-bottom: 15px;">Please fill in the details exactly as they should appear on the order pad.</p>
+        
+        <label>Full Name</label>
+        <input type="text" id="customer_name" placeholder="Name and Surname" required>
+        
+        <label>Delivery Address</label>
+        <input type="text" id="customer_address" placeholder="Street, Suburb, City, Code" required>
+        
+        <label>Telephone Number</label>
+        <input type="text" id="customer_tel" placeholder="e.g. +27 83 123 4567" required>
+        
+        <label>Email Address</label>
+        <input type="email" id="customer_email" placeholder="email@example.com" required>
+
+        <button type="submit" class="place-order" id="submitBtn">Send Order to Fawz Habby</button>
+    </form>
+</div>
+
+<script>
+    // ===== EMAILJS INIT — UNCHANGED =====
+    (function() {
+        emailjs.init("RTmO1qTUSJEMsJa1w");
+    })();
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const container = document.getElementById("cartContainer");
+
+    function calcLineTotal(item) {
+        // Support both old items (price string) and new items (unitPrice number)
+        if(item.lineTotal) return item.lineTotal;
+        if(item.unitPrice) return item.unitPrice * parseInt(item.qty);
+        // Old format: price was "TBC" or "R5"
+        if(item.price && item.price !== 'TBC') {
+            const num = parseFloat(item.price.replace('R',''));
+            if(!isNaN(num)) return num * parseInt(item.qty);
+        }
+        return null;
+    }
+
+    function calcGrandTotal() {
+        let total = 0;
+        let hasAll = true;
+        cart.forEach(item => {
+            const lt = calcLineTotal(item);
+            if(lt !== null) total += lt;
+            else hasAll = false;
+        });
+        return hasAll ? total : null;
+    }
+
+    function renderCart(){
+        container.innerHTML = "";
+
+        if(cart.length === 0){
+            container.innerHTML = "<div style='padding:40px; text-align:center; color:#888;'>Your cart is empty. <a href=\"home.html\" style=\"color:#e60000;\">Continue shopping</a></div>";
+            document.getElementById("submitBtn").disabled = true;
+            document.getElementById("cartSummary").style.display = "none";
+            return;
+        }
+
+        document.getElementById("submitBtn").disabled = false;
+        document.getElementById("cartSummary").style.display = "flex";
+
+        cart.forEach((item, index) => {
+            const lt = calcLineTotal(item);
+            const productName = item.product || 'Satin Ribbon';
+            const lineTotalHTML = lt !== null
+                ? `<div class="item-line-total">R${lt}</div>`
+                : `<div class="item-line-total" style="color:#aaa;">Price TBC</div>`;
+
+            container.innerHTML += `
+                <div class="cart-item">
+                    <div class="item-details">
+                        <div style="font-size:1.05em;font-weight:800;color:#1a1a1a;margin-bottom:6px;">${item.qty}× ${productName}</div>
+                        <div style="font-size:0.82em;color:#666;"><strong>Size:</strong> ${item.size}</div>
+                        <div style="font-size:0.82em;color:#666;"><strong>Colour / Pattern:</strong> ${item.color}</div>
+                        ${item.unitPrice ? `<div style="font-size:0.82em;color:#666;"><strong>Unit Price:</strong> R${item.unitPrice}/roll</div>` : ''}
+                    </div>
+                    <div style="text-align:right;">
+                        ${lt !== null ? `<div style="font-size:0.72em;color:#888;margin-bottom:2px;">${item.qty} × R${item.unitPrice || '?'}</div>` : ''}
+                        ${lineTotalHTML.replace('class="item-line-total"', 'class="item-line-total"').replace('>', '><span style="font-size:0.65em;color:#aaa;display:block;font-weight:600;">Subtotal</span>')}
+                        <button class="remove" onclick="removeItem(${index})" style="margin-top:8px;">Remove</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Grand total
+        const gt = calcGrandTotal();
+        document.getElementById("grandTotalDisplay").textContent = gt !== null ? 'R' + gt : 'Pending Quote';
+    }
+
+    function removeItem(index){
+        cart.splice(index,1);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+    }
+
+    function clearCart(){
+        if(confirm("Are you sure you want to clear your cart?")) {
+            cart = [];
+            localStorage.removeItem("cart");
+            renderCart();
+        }
+    }
+
+    // ===== SEND ORDER VIA EMAILJS — SERVICE/TEMPLATE/INIT UNCHANGED =====
+    document.getElementById("orderForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        
+        const btn = document.getElementById("submitBtn");
+        btn.innerText = "Sending Order...";
+        btn.disabled = true;
+
+        const gt = calcGrandTotal();
+
+        // Build order rows with real prices for the EmailJS template
+        const orderRows = cart.map(item => {
+            const lt = calcLineTotal(item);
+            return {
+                units: item.qty,
+                name: item.product || 'Satin Ribbon',
+                size: item.size,
+                color: item.color,
+                price: item.unitPrice ? 'R' + item.unitPrice + '/roll' : (item.price || 'TBC'),
+                line_total: lt !== null ? 'R' + lt : 'TBC'
+            };
+        });
+
+        const templateParams = {
+            customer_name: document.getElementById("customer_name").value,
+            customer_address: document.getElementById("customer_address").value,
+            customer_tel: document.getElementById("customer_tel").value,
+            customer_email: document.getElementById("customer_email").value,
+            order_id: "W-" + Math.floor(100000 + Math.random() * 900000),
+            order_date: new Date().toLocaleDateString(),
+            reps_name: "Online Store",
+            orders: orderRows,
+            cost_total: gt !== null ? 'R' + gt : 'Pending Quote'
+        };
+
+        // ===== SERVICE ID, TEMPLATE ID — UNCHANGED =====
+        emailjs.send('service_m4jtn1e', 'template_n50qcgl', templateParams)
+            .then(function() {
+                alert("SUCCESS! Your order has been sent to Fawz Haberdashery.");
+                localStorage.removeItem("cart");
+                window.location.reload();
+            }, function(error) {
+                alert("FAILED to send order. Error: " + JSON.stringify(error));
+                btn.innerText = "Send Order to Fawz Habby";
+                btn.disabled = false;
+            });
+    });
+
+    renderCart();
+</script>
+
+
+<!-- FOOTER -->
+
+
+
+<!-- FOOTER -->
+
+
+
+<!-- FOOTER -->
+
+
+
+<!-- FOOTER -->
+<footer style="background:rgba(10,10,15,0.97); border-top:2px solid #c5a059; padding:40px 5% 25px; color:rgba(255,255,255,0.6);">
+    <div style="max-width:1100px; margin:0 auto;">
+        <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:30px; margin-bottom:30px;">
+            <div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                    <img src="data:image/jpeg;base64,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" alt="Fawz Logo" style="height:42px;width:auto;border-radius:6px;">
+                    <div style="font-size:1.2em; font-weight:800; color:#c5a059;">Fawz Haberdashery</div>
+                </div>
+                <p style="font-size:0.85em; line-height:1.7;">Your trusted wholesale haberdashery supplier. Premium quality ribbons, laces, zippers, buttons &amp; more — all at unbeatable South African wholesale prices.</p>
+            </div>
+            <div>
+                <div style="font-weight:700; color:rgba(255,255,255,0.85); margin-bottom:12px; font-size:0.9em; text-transform:uppercase; letter-spacing:1px;">Quick Links</div>
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:0.85em;">
+                    <a href="home.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Home</a>
+                    <a href="satin-ribbons.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Satin Ribbons</a>
+                    <a href="nylon-lace.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Nylon Lace</a>
+                    <a href="demo_cart.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Cart</a>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight:700; color:rgba(255,255,255,0.85); margin-bottom:12px; font-size:0.9em; text-transform:uppercase; letter-spacing:1px;">Contact</div>
+                <div style="font-size:0.85em; line-height:2; color:rgba(255,255,255,0.55);">
+                    📍 45 Azure Road, Lenasia<br>
+                    📞 <a href="tel:0118520061" style="color:rgba(255,255,255,0.55); text-decoration:none;">011 852 0061</a><br>
+                    🕐 Mon–Thu: 8:30am–3:30pm<br>
+                    🕐 Fri: 8:30am–12pm
+                </div>
+            </div>
+        </div>
+        <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:20px; text-align:center; font-size:0.78em;">
+            © 2026 Fawz Haberdashery · All rights reserved · <span style="color:rgba(197,160,89,0.7);">Made by Codepulse Web Dev</span>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

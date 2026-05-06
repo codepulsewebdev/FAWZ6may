@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nylon Lace | Fawz Haberdashery</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="global-images.css">
+<style>
+:root{--ink:#1a1a2e;--gold:#c5a059;--gold-dark:#a07030;--gold-light:#f5e6c0;--off:#f7f4ef;--shadow:0 8px 30px rgba(0,0,0,0.10);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f5f6f8;background-image:url('background.png');background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:fixed;min-height:100vh;}
+header{background:rgba(18,18,18,0.93);backdrop-filter:blur(10px);color:white;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:999;border-bottom:2px solid var(--gold);}
+.header-brand{color:var(--gold);font-size:1.1em;letter-spacing:1px;font-weight:700;}
+nav{display:flex;gap:6px;align-items:center;}
+nav a{color:white;padding:7px 14px;text-decoration:none;font-weight:600;border-radius:20px;transition:all 0.2s;font-size:0.85em;border:1px solid transparent;}
+nav a.back-btn{border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);}
+nav a.back-btn:hover{border-color:var(--gold);color:var(--gold);}
+nav a.cart-link{background:var(--gold);color:#1a0000;border-color:var(--gold);position:relative;}
+nav a.cart-link:hover{background:var(--gold-dark);}
+.cart-badge{position:absolute;top:-7px;right:-7px;background:#e60000;color:white;font-size:0.65em;font-weight:900;width:19px;height:19px;border-radius:50%;display:none;align-items:center;justify-content:center;border:2px solid rgba(18,18,18,0.93);}
+.cart-badge.visible{display:flex;}
+.breadcrumb{padding:10px 20px;font-size:0.8em;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.35);display:flex;align-items:center;gap:6px;}
+.breadcrumb a{color:var(--gold);text-decoration:none;}
+.breadcrumb a:hover{text-decoration:underline;}
+.hero{position:relative;overflow:hidden;min-height:260px;display:flex;align-items:center;}
+.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,20,0.88) 45%,rgba(10,10,20,0.45));}
+.hero-content{position:relative;z-index:2;padding:35px 25px;color:white;max-width:500px;}
+.hero-badge{display:inline-block;background:var(--gold);color:#1a0000;font-size:0.68em;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:12px;}
+.hero-content h1{font-size:clamp(2em,5vw,3em);letter-spacing:3px;text-transform:uppercase;line-height:1.1;margin-bottom:10px;}
+.hero-content h1 span{color:var(--gold);}
+.hero-content p{color:rgba(255,255,255,0.72);font-size:0.9em;line-height:1.6;}
+.info-strip{display:flex;flex-wrap:wrap;background:white;border-bottom:3px solid #efefef;}
+.info-item{flex:1;min-width:90px;padding:15px 10px;text-align:center;border-right:1px solid #f0f0f0;}
+.info-item:last-child{border-right:none;}
+.ii-icon{font-size:1.3em;margin-bottom:4px;}
+.ii-label{font-size:0.6em;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#bbb;margin-bottom:2px;}
+.ii-val{font-size:0.82em;font-weight:700;color:#333;}
+.page-wrap{max-width:1000px;margin:30px auto;padding:0 15px;}
+.sec-label{font-size:0.78em;text-transform:uppercase;letter-spacing:3px;color:rgba(255,255,255,0.85);margin-bottom:16px;text-shadow:0 1px 4px rgba(0,0,0,0.6);font-weight:700;}
+.pattern-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:30px;}
+@media(max-width:450px){.pattern-grid{grid-template-columns:1fr 1fr;}}
+.pattern-card{background:white;border-radius:13px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:all 0.3s;box-shadow:0 4px 14px rgba(0,0,0,0.07);}
+.pattern-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,0.13);border-color:#e0d8cc;}
+.pattern-card.active{border-color:var(--gold);box-shadow:0 8px 25px rgba(197,160,89,0.4);}
+.pimg-wrap{position:relative;overflow:hidden;height:95px;background:#f0f0f0;}
+.pattern-card:hover .site-image-pattern,.pattern-card.active .site-image-pattern{transform:scale(1.07);}
+.pbadge{position:absolute;top:6px;left:6px;background:rgba(20,20,20,0.85);color:white;font-size:0.62em;font-weight:800;padding:3px 7px;border-radius:7px;letter-spacing:1px;}
+.pattern-card.active .pbadge{background:var(--gold);color:#1a0000;}
+.pcheck{position:absolute;top:6px;right:6px;width:20px;height:20px;background:var(--gold);border-radius:50%;color:#1a0000;display:none;align-items:center;justify-content:center;font-size:0.72em;font-weight:900;}
+.pattern-card.active .pcheck{display:flex;}
+.pfoot{padding:9px 11px;}
+.pname{font-weight:800;font-size:0.82em;color:#222;}
+.order-panel{background:white;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;max-width:500px;margin:0 auto 40px;}
+.op-hdr{background:linear-gradient(135deg,var(--ink),#2a1a0a);color:white;padding:18px 22px;border-bottom:3px solid var(--gold);}
+.op-hdr h2{font-size:1.1em;margin-bottom:3px;color:var(--gold);}
+.op-hdr p{font-size:0.8em;opacity:0.7;}
+.op-body{padding:22px;}
+.step-row{display:flex;margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid #e5ddd0;}
+.sind{flex:1;padding:9px;text-align:center;font-size:0.75em;font-weight:700;background:#f5f5f5;color:#aaa;transition:all 0.3s;}
+.sind.done{background:#fdf3e0;color:#7a5c1e;}
+.sind.current{background:var(--gold);color:#1a0000;}
+.sel-box{background:var(--off);border:1px solid #e8e0d0;border-radius:10px;padding:12px 14px;margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+.sel-thumb{width:56px;height:38px;border-radius:6px;object-fit:cover;border:1px solid #ddd;flex-shrink:0;}
+.sel-thumb-ph{width:56px;height:38px;border-radius:6px;background:#ddd;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:0.65em;flex-shrink:0;}
+.sel-info-text .pn{font-weight:800;font-size:0.88em;color:#333;}
+.sel-info-text .yd{font-size:0.72em;color:#999;}
+.qty-lbl{font-size:0.7em;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#bbb;margin-bottom:10px;display:block;}
+.qty-row{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:12px;}
+.qty-control{display:flex;align-items:center;border:2px solid #e5ddd0;border-radius:10px;overflow:hidden;}
+.qty-btn{width:44px;height:44px;border:none;background:var(--off);font-size:1.3em;cursor:pointer;transition:background 0.2s;font-weight:300;color:#555;font-family:inherit;}
+.qty-btn:hover{background:#e8e0d0;}
+#lace-qty{width:60px;height:44px;border:none;border-left:2px solid #e5ddd0;border-right:2px solid #e5ddd0;text-align:center;font-size:1.1em;font-weight:700;outline:none;background:white;color:#222;font-family:inherit;}
+.price-tag{display:inline-flex;align-items:baseline;gap:3px;background:linear-gradient(135deg,#fdf3e0,#f5e6c0);border:1px solid #e8c97a;border-radius:10px;padding:8px 13px;}
+.price-tag .cur{font-size:0.82em;color:#7a5c1e;font-weight:700;}
+.price-tag .amt{font-size:1.7em;font-weight:900;color:#5c4010;}
+.price-tag .per{font-size:0.68em;color:#a07030;}
+.total-line{margin-top:8px;font-size:0.85em;color:#aaa;}
+.total-line strong{color:#7a5c1e;}
+.add-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--ink),#2a1a0a);color:white;border:none;border-radius:12px;font-size:1em;font-weight:800;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.3s;box-shadow:0 4px 15px rgba(26,26,46,0.25);margin-top:14px;font-family:inherit;border-top:2px solid var(--gold);}
+.add-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(26,26,46,0.35);}
+.success-box{background:linear-gradient(135deg,#fdf3e0,#fffdf7);border:2px solid var(--gold);border-radius:14px;padding:22px;text-align:center;}
+.success-box .chk{font-size:2.5em;margin-bottom:8px;}
+.success-box h3{color:#5c4010;font-size:1.15em;margin-bottom:6px;}
+.success-box p{color:#888;font-size:0.86em;margin-bottom:18px;}
+.suc-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:400px){.suc-actions{grid-template-columns:1fr;}}
+@media(max-width:600px){
+    header{padding:10px 14px;}
+    .header-brand{font-size:0.92em;}
+    nav a{padding:6px 10px;font-size:0.78em;}
+    .hero{min-height:180px;}
+    .hero-content h1{font-size:1.8em;letter-spacing:1px;}
+    .hero-content{padding:24px 16px;}
+    .page-wrap{padding:0 10px;margin:20px auto;}
+    .pattern-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+    .order-panel{margin:0 0 30px;}
+    .panel-body{padding:16px 14px;}
+    footer > div > div:first-child{grid-template-columns:1fr !important;}
+    footer{padding:28px 5% 18px !important;}
+    .breadcrumb{padding:8px 14px;font-size:0.75em;}
+}
+.suc-btn{padding:11px;border:2px solid #e5ddd0;background:white;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.82em;color:#444;transition:all 0.2s;font-family:inherit;}
+.suc-btn:hover{border-color:var(--gold);color:var(--gold-dark);}
+.suc-btn.primary{background:var(--ink);color:white;border-color:var(--ink);grid-column:1/-1;border-top:2px solid var(--gold);}
+.suc-btn.primary:hover{background:#2a1a0a;}
+.hidden{display:none;}
+
+</style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+<body>
+
+<header>
+  <div class="header-brand" style="display:flex;align-items:center;gap:8px;"><img src="data:image/jpeg;base64,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" alt="Fawz" style="height:36px;width:auto;border-radius:4px;"> Fawz Haberdashery</div>
+  <nav>
+    <a href="home.html" class="back-btn">← Back to Shop</a>
+    <a href="demo_cart.html" class="cart-link">
+      🛒 Cart
+      <span class="cart-badge" id="cartBadge">0</span>
+    </a>
+  </nav>
+</header>
+
+<div class="breadcrumb">
+  <a href="home.html">Home</a>
+  <span style="opacity:0.4;">›</span>
+  <a href="home.html#product-showcase">Shop</a>
+  <span style="opacity:0.4;">›</span>
+  <span style="color:rgba(255,255,255,0.85);">Nylon Lace</span>
+</div>
+
+<div class="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Wholesale Pricing</div>
+    <h1>Nylon <span>Lace</span></h1>
+    <p id="heroPrice">7 elegant patterns &middot; Premium quality &middot; R10 per roll</p>
+  </div>
+</div>
+
+
+
+<div class="page-wrap">
+  <div class="sec-label" style="margin-top:5px;">Choose a Pattern</div>
+
+  <div class="pattern-grid">
+    <div class="pattern-card" data-pattern="105" onclick="selectPattern(this)">
+      <div class="pimg-wrap">
+        <!-- LACE PATTERN IMAGE: 105 -->
+        <img src="105.png" class="site-image-pattern" alt="105">
+        <div class="pbadge">105</div><div class="pcheck">✓</div>
+      </div>
+      <div class="pfoot"><span class="pname">Pattern 105</span></div>
+    </div>
+    <div class="pattern-card" data-pattern="1191" onclick="selectPattern(this)">
+      <div class="pimg-wrap">
+        <!-- LACE PATTERN IMAGE: 1191 -->
+        <img src="1191.png" class="site-image-pattern" alt="1191">
+        <div class="pbadge">1191</div><div class="pcheck">✓</div>
+      </div>
+      <div class="pfoot"><span class="pname">Pattern 1191</span></div>
+    </div>
+    <div class="pattern-card" data-pattern="1268" onclick="selectPattern(this)">
+      <div class="pimg-wrap">
+        <!-- LACE PATTERN IMAGE: 1268 -->
+        <img src="1268.png" class="site-image-pattern" alt="1268">
+        <div class="pbadge">1268</div><div class="pcheck">✓</div>
+      </div>
+      <div class="pfoot"><span class="pname">Pattern 1268</span></div>
+    </div>
+    <div class="pattern-card" data-pattern="1326" onclick="selectPattern(this)">
+      <div class="pimg-wrap">
+        <!-- LACE PATTERN IMAGE: 1326 -->
+        <img src="1326.png" class="site-image-pattern" alt="1326">
+        <div class="pbadge">1326</div><div class="pcheck">✓</div>
+      </div>
+      <div class="pfoot"><span class="pname">Pattern 1326</span></div>
+    </div>
+    <div class="pattern-card" data-pattern="1337" onclick="selectPattern(this)">
+      <div class="pimg-wrap">
+        <!-- LACE PATTERN IMAGE: 1337 -->
+        <img src="1337.png" class="site-image-pattern" alt="1337">
+        <div class="pbadge">1337</div><div class="pcheck">✓</div>
+      </div>
+      <div class="pfoot"><span class="pname">Pattern 1337</span></div>
+    </div>
+    <div class="pattern-card" data-pattern="1342" onclick="selectPattern(this)">
+      <div class="pimg-wrap">
+        <!-- LACE PATTERN IMAGE: 1342 -->
+        <img src="1342.png" class="site-image-pattern" alt="1342">
+        <div class="pbadge">1342</div><div class="pcheck">✓</div>
+      </div>
+      <div class="pfoot"><span class="pname">Pattern 1342</span></div>
+    </div>
+    <div class="pattern-card" data-pattern="1365" onclick="selectPattern(this)">
+      <div class="pimg-wrap">
+        <!-- LACE PATTERN IMAGE: 1365 -->
+        <img src="1365.png" class="site-image-pattern" alt="1365">
+        <div class="pbadge">1365</div><div class="pcheck">✓</div>
+      </div>
+      <div class="pfoot"><span class="pname">Pattern 1365</span></div>
+    </div>
+  </div>
+
+  <div class="order-panel">
+    <div class="op-hdr">
+      <h2>Your Order</h2>
+      <p>Select a pattern above, then set quantity</p>
+    </div>
+    <div class="op-body">
+      <div class="step-row">
+        <div class="sind current" id="ind1">① Choose a Pattern</div>
+        <div class="sind" id="ind2">② Quantity</div>
+      </div>
+
+      <div class="sel-box" id="selBox">
+        <div class="sel-thumb-ph" id="selThumbPh">?</div>
+        <div class="sel-info-text">
+          <div class="pn" id="selName">No pattern selected yet</div>
+          <div class="yd" id="selSub">Tap a pattern card above to begin</div>
+        </div>
+      </div>
+
+      <div id="lace-step2" class="hidden">
+        <span class="qty-lbl">Quantity (rolls)</span>
+        <div class="qty-row">
+          <div class="qty-control">
+            <button class="qty-btn" onclick="changeLaceQty(-1)">−</button>
+            <input type="number" id="lace-qty" value="1" min="1" readonly>
+            <button class="qty-btn" onclick="changeLaceQty(1)">+</button>
+          </div>
+          <div class="price-tag">
+            <span class="cur">R</span>
+            <span class="amt" id="lPriceAmt">10</span>
+            <span class="per">/ roll</span>
+          </div>
+        </div>
+        <div class="total-line">Total: <strong id="lTotalPrice">R10</strong></div>
+        <button class="add-btn" onclick="addLaceToCart()">🛒 ADD TO CART</button>
+      </div>
+
+      <div id="lace-success" class="success-box hidden">
+        <div class="chk">✅</div>
+        <h3>Added to Cart!</h3>
+        <p id="lSuccessDesc"></p>
+        <div class="suc-actions">
+          <button class="suc-btn" onclick="resetLace()">Add Another Pattern</button>
+          <button class="suc-btn primary" onclick="window.location.href='demo_cart.html'">🛒 View Cart &amp; Checkout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+const BASE_PRICE = 10;
+document.addEventListener("DOMContentLoaded", () => {
+  const el = document.getElementById("heroPrice");
+  if(el) el.innerHTML = "7 elegant patterns &middot; Premium quality &middot; R" + PRICE + " per roll";
+  const pa = document.getElementById("lPriceAmt");
+  if(pa) pa.textContent = PRICE;
+  const tl = document.getElementById("lTotalPrice");
+  if(tl) tl.textContent = "R" + PRICE;
+});
+const tier = parseInt(sessionStorage.getItem("fawz_tier") || "1");
+
+const PRICE = BASE_PRICE + (tier - 1) * 5;
+let selPattern = null;
+
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const badge = document.getElementById('cartBadge');
+  if(cart.length > 0){ badge.textContent = cart.length; badge.classList.add('visible'); }
+  else { badge.classList.remove('visible'); }
+}
+updateCartBadge();
+
+function selectPattern(card) {
+  document.querySelectorAll('.pattern-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  selPattern = card.dataset.pattern;
+
+  const box = document.getElementById('selBox');
+  const ph = document.getElementById('selThumbPh');
+  if(ph) {
+    const img = document.createElement('img');
+    img.className = 'sel-thumb';
+    img.src = '' + selPattern + '.png';
+    img.alt = selPattern;
+    ph.replaceWith(img);
+  } else {
+    const ex = box.querySelector('.sel-thumb');
+    if(ex) ex.src = '' + selPattern + '.png';
+  }
+
+  document.getElementById('selName').textContent = 'Pattern ' + selPattern;
+  document.getElementById('selSub').textContent = 'R' + PRICE + ' per roll';
+
+  document.getElementById('lace-step2').classList.remove('hidden');
+  document.getElementById('lace-success').classList.add('hidden');
+  document.getElementById('ind1').className = 'sind done';
+  document.getElementById('ind2').className = 'sind current';
+  updateTotal();
+
+  if(window.innerWidth < 700) {
+    document.querySelector('.order-panel').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+function changeLaceQty(d) {
+  const inp = document.getElementById('lace-qty');
+  let v = parseInt(inp.value) + d;
+  if(v < 1) v = 1;
+  inp.value = v;
+  updateTotal();
+}
+
+function updateTotal() {
+  const q = parseInt(document.getElementById('lace-qty').value) || 1;
+  document.getElementById('lTotalPrice').textContent = 'R' + (PRICE * q);
+}
+
+function addLaceToCart() {
+  if(!selPattern){ alert("Please select a pattern first!"); return; }
+  const qty = parseInt(document.getElementById("lace-qty").value);
+  const item = {
+    product: 'Nylon Lace',
+    size: 'Pattern ' + selPattern,
+    color: 'White/Cream',
+    qty: qty,
+    unitPrice: PRICE,
+    lineTotal: PRICE * qty
+  };
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart.push(item);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  document.getElementById('lace-step2').classList.add('hidden');
+  document.getElementById('lace-success').classList.remove('hidden');
+  document.getElementById('lSuccessDesc').textContent = qty + '× Pattern ' + selPattern + ' — R' + PRICE + '/roll · Total: R' + (PRICE * qty);
+  document.getElementById('ind2').className = 'sind done';
+  document.getElementById('lace-qty').value = 1;
+  document.getElementById('lTotalPrice').textContent = 'R' + PRICE;
+  updateCartBadge();
+}
+
+function resetLace() {
+  selPattern = null;
+  document.querySelectorAll('.pattern-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('lace-qty').value = 1;
+  document.getElementById('lTotalPrice').textContent = 'R' + PRICE;
+  document.getElementById('lace-step2').classList.add('hidden');
+  document.getElementById('lace-success').classList.add('hidden');
+  document.getElementById('selName').textContent = 'No pattern selected yet';
+  document.getElementById('selSub').textContent = 'Tap a pattern card above to begin';
+  const box = document.getElementById('selBox');
+  const img = box.querySelector('.sel-thumb');
+  if(img) {
+    const ph = document.createElement('div');
+    ph.className = 'sel-thumb-ph'; ph.id = 'selThumbPh'; ph.textContent = '?';
+    img.replaceWith(ph);
+  }
+  document.getElementById('ind1').className = 'sind current';
+  document.getElementById('ind2').className = 'sind';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+
+<!-- FOOTER -->
+
+
+
+<!-- FOOTER -->
+
+
+
+<!-- FOOTER -->
+
+
+
+<!-- FOOTER -->
+<footer style="background:rgba(10,10,15,0.97); border-top:2px solid #c5a059; padding:40px 5% 25px; color:rgba(255,255,255,0.6);">
+    <div style="max-width:1100px; margin:0 auto;">
+        <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:30px; margin-bottom:30px;">
+            <div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                    <img src="data:image/jpeg;base64,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" alt="Fawz Logo" style="height:42px;width:auto;border-radius:6px;">
+                    <div style="font-size:1.2em; font-weight:800; color:#c5a059;">Fawz Haberdashery</div>
+                </div>
+                <p style="font-size:0.85em; line-height:1.7;">Your trusted wholesale haberdashery supplier. Premium quality ribbons, laces, zippers, buttons &amp; more — all at unbeatable South African wholesale prices.</p>
+            </div>
+            <div>
+                <div style="font-weight:700; color:rgba(255,255,255,0.85); margin-bottom:12px; font-size:0.9em; text-transform:uppercase; letter-spacing:1px;">Quick Links</div>
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:0.85em;">
+                    <a href="home.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Home</a>
+                    <a href="satin-ribbons.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Satin Ribbons</a>
+                    <a href="nylon-lace.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Nylon Lace</a>
+                    <a href="demo_cart.html" style="color:rgba(255,255,255,0.55); text-decoration:none;">Cart</a>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight:700; color:rgba(255,255,255,0.85); margin-bottom:12px; font-size:0.9em; text-transform:uppercase; letter-spacing:1px;">Contact</div>
+                <div style="font-size:0.85em; line-height:2; color:rgba(255,255,255,0.55);">
+                    📍 45 Azure Road, Lenasia<br>
+                    📞 <a href="tel:0118520061" style="color:rgba(255,255,255,0.55); text-decoration:none;">011 852 0061</a><br>
+                    🕐 Mon–Thu: 8:30am–3:30pm<br>
+                    🕐 Fri: 8:30am–12pm
+                </div>
+            </div>
+        </div>
+        <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:20px; text-align:center; font-size:0.78em;">
+            © 2026 Fawz Haberdashery · All rights reserved · <span style="color:rgba(197,160,89,0.7);">Made by Codepulse Web Dev</span>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

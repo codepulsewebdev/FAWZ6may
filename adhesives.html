@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adhesives | Fawz Haberdashery</title>
+ 
+    <style>
+        :root { 
+            --fawz-red: #e31e24; 
+            --fawz-dark: #1a1a1a; 
+            --fawz-grey: #f8f8f8;
+            --border: #eeeeee;
+        }
+        body { margin: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; background: #ffffff; color: var(--fawz-dark); }
+        header { position: sticky; top: 0; background: #ffffff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--fawz-red); box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000; }
+        header h1 { color: var(--fawz-dark); font-size: 1.4em; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        header h1 span { color: var(--fawz-red); }
+        nav a { color: var(--fawz-dark); margin-left: 20px; text-decoration: none; font-weight: 700; font-size: 0.9em; }
+        .section { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
+        .section h3 { text-align: center; color: var(--fawz-dark); font-size: 2.2em; margin-bottom: 50px; text-transform: uppercase; }
+        .section h3::after { content: ''; display: block; width: 60px; height: 4px; background: var(--fawz-red); margin: 10px auto; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .card { background: #ffffff; border: 1px solid var(--border); border-radius: 4px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: var(--fawz-red); transform: translateY(-5px); }
+        .card img { width: 100%; height: 280px; object-fit: contain; margin-bottom: 20px; }
+        .card strong { display: block; color: var(--fawz-dark); font-size: 1.2em; text-transform: uppercase; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
+        .modal-content { background: white; margin: 8vh auto; width: 90%; max-width: 1000px; height: 75vh; display: flex; border-radius: 8px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.2); position: relative; }
+        .modal-left { flex: 1; background: #fff; display: flex; align-items: center; justify-content: center; padding: 40px; border-right: 1px solid var(--border); }
+        .modal-left img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .modal-right { flex: 1.2; display: flex; flex-direction: column; }
+        .selection-area { padding: 40px; flex: 1; overflow-y: auto; }
+        .selection-area h2 { color: var(--fawz-red); margin-top: 0; text-transform: uppercase; font-size: 1.8em; }
+        label { display: block; margin: 20px 0 8px; font-weight: bold; color: #555; font-size: 0.75em; text-transform: uppercase; }
+        select, input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 4px; font-size: 1em; background: var(--fawz-grey); }
+        #price { font-size: 2.2em; font-weight: 900; color: var(--fawz-dark); margin: 25px 0; letter-spacing: 2px; }
+        .btn-add { width: 100%; background: var(--fawz-red); border: none; padding: 20px; color: white; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: 0.3s; }
+        .btn-add:hover { background: #b3161a; }
+        .cart-summary { background: var(--fawz-grey); padding: 25px 40px; border-top: 1px solid #ddd; max-height: 200px; overflow-y: auto; }
+        .cart-summary h4 { margin: 0 0 12px; color: var(--fawz-red); font-size: 0.85em; text-transform: uppercase; }
+        .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-size: 0.9em; }
+        .close-x { position: absolute; right: 25px; top: 20px; font-size: 32px; cursor: pointer; color: #bbb; z-index: 10; }
+    </style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+<body>
+ 
+<header>
+    <h1>Fawz <span>Haberdashery</span></h1>
+    <nav>
+        <a href="home.html">Home</a>
+        <a href="demo_cart.html">View Cart</a>
+    </nav>
+</header>
+ 
+<div class="section">
+    <h3>Adhesives</h3>
+    <div class="grid">
+        <div class="card" onclick="openModal('Craft Glue', 'images/adhesives/craft/Craft Glue 50ml & 100ml.jpg')">
+            <img src="images/adhesives/craft/Craft Glue 50ml & 100ml.jpg">
+            <strong>Craft Glue</strong>
+        </div>
+        <div class="card" onclick="openModal('Fabric Glue', 'images/adhesives/fabric/IMG_3357.jpg')">
+            <img src="images/adhesives/fabric/IMG_3357.jpg">
+            <strong>Fabric Glue</strong>
+        </div>
+    </div>
+</div>
+ 
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-x" onclick="closeModal()">&times;</span>
+        <div class="modal-left">
+            <img id="modal-img" src="">
+        </div>
+        <div class="modal-right">
+            <div class="selection-area">
+                <h2 id="modal-title">Product Name</h2>
+                <label>Select Size</label>
+                <select id="size" onchange="updatePrice()">
+                    <option value="50ml">50ml</option>
+                    <option value="100ml">100ml</option>
+                </select>
+                <label>Quantity</label>
+                <input type="number" id="qty" value="1" min="1" oninput="updatePrice()">
+                <!-- ═══════════════════════════════════════════════════
+                     PRICE DISPLAY — value is written here by
+                     the fetchPrice() function after Firestore returns
+                     the tiered price for the logged-in customer.
+                     ═══════════════════════════════════════════════════ -->
+                <p id="price">Loading...</p>
+                <button class="btn-add" onclick="addToCart()">Add to Cart</button>
+            </div>
+            <div class="cart-summary">
+                <h4>Recent Additions</h4>
+                <div id="cart-list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<!-- ============================================================
+     FIREBASE SDK — loaded as ES modules (type="module" below)
+     The SDK is fetched from Google's CDN; no local install needed.
+     ============================================================ -->
+<script type="module">
+ 
+    // ── IMPORT Firebase tools ──────────────────────────────────────
+    // `db`  = your Firestore database handle (from the config file)
+    // `doc` = function that builds a reference to a single document
+    // `getDoc` = function that actually fetches that document
+    import { db } from "./firebase-config.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+ 
+    // ── SECURITY LAYER ─────────────────────────────────────────────
+    // Disables right-click, F12, Ctrl+Shift+I, etc.
+    import "./security.js";
+ 
+    // ══════════════════════════════════════════════════════════════
+    //  USER TIER — controls which price column is shown
+    //  Set this variable from your authentication/session system.
+    //  Example: after login, your auth handler does:
+    //      window.userTier = userData.tier;  // "tier_1" / "tier_2" / "tier_3"
+    //  Until your auth is wired up, default is "tier_1" (retail).
+    // ══════════════════════════════════════════════════════════════
+    if (!window.userTier) {
+        window.userTier = "tier_1"; // ← change default tier here if needed
+    }
+ 
+    // ── STATE ──────────────────────────────────────────────────────
+    let currentProduct  = "";
+    let currentUnitPrice = 0;
+ 
+    // ── OPEN MODAL ─────────────────────────────────────────────────
+    window.openModal = function(name, imgPath) {
+        currentProduct   = name;
+        currentUnitPrice = 0;
+        document.getElementById("modal-title").textContent = name;
+        document.getElementById("modal-img").src           = imgPath;
+        document.getElementById("modal").style.display     = "block";
+        updatePrice();
+        renderCart();
+    };
+ 
+    window.closeModal = function() {
+        document.getElementById("modal").style.display = "none";
+    };
+ 
+    // ══════════════════════════════════════════════════════════════
+    //  updatePrice — FIRESTORE PRICE FETCH
+    //  Called whenever the size dropdown or quantity input changes.
+    //
+    //  WHAT HAPPENS HERE:
+    //  1. Build a Firestore document reference using the product name
+    //     as the Document ID inside the `product_mirror` collection.
+    //  2. Fetch that single document (one read = minimal cost).
+    //  3. Read the field whose name matches window.userTier.
+    //     e.g. if userTier = "tier_2", we read doc.data().tier_2
+    //  4. Multiply by quantity and display the total.
+    // ══════════════════════════════════════════════════════════════
+    window.updatePrice = async function() {
+        const qty          = parseInt(document.getElementById("qty").value) || 1;
+        const priceDisplay = document.getElementById("price");
+ 
+        if (!currentProduct) return;
+ 
+        priceDisplay.textContent = "Loading...";
+ 
+        try {
+            // ── DATABASE SCRATCH STARTS HERE ──────────────────────
+            //    Collection : product_mirror
+            //    Document ID: currentProduct  (e.g. "Craft Glue")
+            const productRef  = doc(db, "product_mirror", currentProduct);
+            const productSnap = await getDoc(productRef);
+            // ── DATABASE SCRATCH ENDS HERE ────────────────────────
+ 
+            if (productSnap.exists()) {
+                const data = productSnap.data();
+ 
+                // Read ONLY the price field for this customer's tier
+                const unitPrice = data[window.userTier];
+ 
+                if (unitPrice !== undefined) {
+                    currentUnitPrice             = unitPrice;
+                    priceDisplay.textContent     = `R ${(unitPrice * qty).toFixed(2)}`;
+                } else {
+                    // Tier field missing in Firestore document
+                    priceDisplay.textContent = "Price unavailable";
+                    console.warn(`Tier field '${window.userTier}' not found for product: ${currentProduct}`);
+                }
+            } else {
+                // No document found for this product name
+                priceDisplay.textContent = "Product not found";
+                console.warn(`No Firestore document found for: ${currentProduct}`);
+            }
+ 
+        } catch (error) {
+            // Network error or Firestore rules blocked the read
+            priceDisplay.textContent = "R ####";
+            console.error("Firestore fetch error:", error);
+        }
+    };
+ 
+    // ── ADD TO CART ────────────────────────────────────────────────
+    window.addToCart = function() {
+        if (currentUnitPrice === 0) {
+            alert("Price is still loading. Please wait a moment.");
+            return;
+        }
+        const size = document.getElementById("size").value;
+        const qty  = parseInt(document.getElementById("qty").value);
+        let cart   = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.push({ product: currentProduct, size, qty, price: currentUnitPrice, tier: window.userTier });
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+        if (!confirm("Added! Continue shopping?")) closeModal();
+    };
+ 
+    // ── RENDER CART SUMMARY ────────────────────────────────────────
+    function renderCart() {
+        const cart      = JSON.parse(localStorage.getItem("cart")) || [];
+        const container = document.getElementById("cart-list");
+        container.innerHTML = cart.length ? "" : "<p style='color:#999;font-size:0.8em;'>Cart empty.</p>";
+        cart.slice(-3).reverse().forEach(item => {
+            container.innerHTML += `
+                <div class="cart-item">
+                    <span>${item.product} (${item.size}) x${item.qty}</span>
+                    <strong>R ${(item.price * item.qty).toFixed(2)}</strong>
+                </div>`;
+        });
+    }
+ 
+    // Close modal on backdrop click
+    window.onclick = e => { if (e.target === document.getElementById("modal")) closeModal(); };
+ 
+</script>
+</body>
+</html>

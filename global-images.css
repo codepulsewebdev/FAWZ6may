@@ -1,0 +1,89 @@
+/* GLOBAL IMAGE STYLES for fawz-demo-joe-main */
+
+/* Standard product card image */
+.site-image-card {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    background: #fafafa;
+}
+
+/* Large image inside popups/modals */
+.site-image-popup {
+    width: 100%;
+    max-width: 450px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+/* Base grid structure for HTML option templates */
+.site-option-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+/* Individual interactive option item container */
+.site-option-item {
+    text-align: center;
+    border: 2px solid #eeeeee;
+    border-radius: 6px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+}
+
+.site-option-item:hover, .site-option-item.selected {
+    border-color: #e31e24; /* fawz red */
+    background: #f8f8f8; /* fawz grey */
+}
+
+/* Small image inside the selectable options */
+.site-image-option {
+    width: 100%;
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border: none;
+    pointer-events: none;
+}
+
+/* Custom size for nylon-lace & satin-ribbons pattern grid */
+.site-image-pattern {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+}
+
+.site-option-item span {
+    display: block;
+    font-size: 0.85em;
+    font-weight: 700;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .site-image-card {
+        height: 180px;
+    }
+}
+@media (max-width: 600px) {
+    .site-image-card {
+        height: 140px;
+        margin-bottom: 15px;
+    }
+    .site-image-popup {
+        max-width: 100%;
+        height: auto;
+    }
+}

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bias Binding | Fawz Haberdashery</title>
+
+    <style>
+        :root { 
+            --fawz-red: #e31e24; 
+            --fawz-dark: #1a1a1a; 
+            --fawz-grey: #f8f8f8;
+            --border: #eeeeee;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #ffffff;
+            color: var(--fawz-dark);
+        }
+
+        header {
+            position: sticky; top: 0;
+            background: #ffffff;
+            padding: 15px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 3px solid var(--fawz-red);
+            z-index: 1000;
+        }
+        header h1 { color: var(--fawz-dark); font-size: 1.4em; margin: 0; text-transform: uppercase; }
+        header h1 span { color: var(--fawz-red); }
+        nav a { color: var(--fawz-dark); margin-left: 20px; text-decoration: none; font-weight: 700; font-size: 0.9em; }
+
+        .section { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
+        .section h3 { text-align: center; font-size: 2.2em; text-transform: uppercase; }
+        .section h3::after { content: ''; display: block; width: 60px; height: 4px; background: var(--fawz-red); margin: 10px auto; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; justify-content: center; }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .card:hover { border-color: var(--fawz-red); transform: translateY(-5px); }
+        .card img { 
+            width: 100%; 
+            height: 250px; 
+            object-fit: cover; 
+            border-radius: 6px;
+            margin-bottom: 20px; 
+        }
+
+        .modal {
+            display: none; position: fixed; z-index: 2000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white; margin: 5vh auto; width: 95%; max-width: 1100px;
+            height: 85vh; display: flex; border-radius: 8px; overflow: hidden;
+            position: relative;
+        }
+        
+        /* Mobile adjustment for modal */
+        @media (max-width: 768px) {
+            .modal-content { flex-direction: column; height: 95vh; overflow-y: auto; }
+            .modal-left, .modal-right { flex: none; width: 100%; }
+        }
+
+        .modal-left { flex: 1; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; border-right: 1px solid var(--border); }
+        .modal-left img { 
+            width: 100%; 
+            max-width: 450px; 
+            aspect-ratio: 1 / 1; 
+            object-fit: cover; 
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .modal-right { flex: 1.2; display: flex; flex-direction: column; background: #fff; }
+        
+        .selection-area { padding: 30px; flex: 1; overflow-y: auto; }
+        .selection-area h2 { color: var(--fawz-red); text-transform: uppercase; font-size: 1.5em; border-bottom: 2px solid var(--fawz-red); padding-bottom: 10px; }
+
+        label { display: block; margin: 20px 0 8px; font-weight: bold; color: #555; font-size: 0.8em; text-transform: uppercase; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 1em; }
+
+        #color-grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .color-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .color-item:hover { border-color: var(--fawz-red); background: #fff9f9; }
+        .color-swatch { width: 22px; height: 22px; border: 1px solid #ccc; margin-right: 12px; flex-shrink: 0; }
+        .color-name { font-size: 0.8em; font-weight: 700; text-transform: uppercase; }
+
+        .btn-add { width: 100%; background: var(--fawz-red); border: none; padding: 20px; color: white; font-weight: 800; text-transform: uppercase; cursor: pointer; margin-top: 25px; }
+
+        .routing-panel { text-align: center; padding: 40px 20px; }
+        .btn-route { display: block; width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        .btn-route:hover { border-color: var(--fawz-red); background: var(--fawz-grey); }
+
+        .close-x { position: absolute; right: 20px; top: 15px; font-size: 30px; cursor: pointer; color: #999; z-index: 10; }
+    </style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+
+<body>
+
+<header>
+    <h1>Fawz <span>Haberdashery</span></h1>
+    <nav>
+        <a href="home.html">Home</a>
+        <a href="demo_cart.html">View Cart</a>
+    </nav>
+</header>
+
+<div class="section">
+    <h3>Bias Binding</h3>
+    <div class="grid">
+        <div class="card" onclick="openSelection()">
+            <img src="images/biasBinding/biasBindingCat.jpg" onerror="this.src='images/biasBinding/home.jpg'">
+            <strong>Bias Binding (Various Sizes)</strong>
+        </div>
+    </div>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-x" onclick="closeModal()">&times;</span>
+        
+        <div class="modal-left">
+            <img id="modal-img" src="images/biasBinding/biasBindingCat.jpg">
+            <div id="product-label" style="margin-top: 20px; font-weight: 900; color: #333; text-transform: uppercase;">Select Width & Color</div>
+        </div>
+
+        <div class="modal-right">
+            <div class="selection-area">
+                <h2 id="modal-title">Bias Binding</h2>
+                
+                <div id="step-size">
+                    <label>1. Select Width</label>
+                    <select id="binding-size" onchange="showColors()">
+                        <option value="" disabled selected>Choose size...</option>
+                        <option value="13mm">13mm</option>
+                        <option value="18mm">18mm</option>
+                        <option value="25mm">25mm</option>
+                    </select>
+                </div>
+
+                <div id="step-color" style="display:none;">
+                    <label>2. Select Color</label>
+                    <div id="color-grid-container"></div>
+                </div>
+
+                <div id="step-qty" style="display:none;">
+                    <label>3. Quantity</label>
+                    <input type="number" id="qty" value="1" min="1">
+                    <button class="btn-add" onclick="addToCart()">Add to Cart</button>
+                </div>
+
+                <div id="step-routing" style="display:none;" class="routing-panel">
+                    <h3 style="color:#2ecc71">Added to Cart!</h3>
+                    <button class="btn-route" onclick="resetToColors()">Different Color (Same Size)</button>
+                    <button class="btn-route" onclick="resetToSize()">Select New Size</button>
+                    <button class="btn-route" onclick="window.location.href='home.html'" style="background:var(--fawz-red); color:white; border:none;">Back to Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     *  MANUAL IMAGE PATHS SECTION
+     *  Add your correct file names here. 
+     *  Format: "ColorName-Size": "FileName.jpg"
+     */
+   
+    /**
+     *  MANUAL IMAGE PATHS SECTION
+     *  All 20 colors mapped for 13mm, 18mm, and 25mm.
+     */
+    const productImages = {
+        // --- 13mm Section (Suffix: 1) ---
+        "White-13mm": "images/biasBinding/binding-W1.jpg",
+        "Cream-13mm": "images/biasBinding/binding-C1.jpg", 
+        "Yellow-13mm": "images/biasBinding/binding-Y1.jpg",
+        "Gold-13mm": "images/biasBinding/binding-G1.jpg",
+        "Old Gold-13mm": "images/biasBinding/binding-G1.jpg",
+        "Orange-13mm": "images/biasBinding/binding-O1.jpg",
+        "Red-13mm": "images/biasBinding/binding-R1.jpg",
+        "Maroon-13mm": "images/biasBinding/binding-BR1.jpg",
+        "Rose-13mm": "images/biasBinding/binding-M1.jpg",
+        "Cerise-13mm": "images/biasBinding/binding-M1.jpg",
+        "Emerald-13mm": "images/biasBinding/binding-G1.jpg",
+        "Bottle-13mm": "images/biasBinding/binding-G1.jpg",
+        "Purple-13mm": "images/biasBinding/binding-P1.jpg",
+        "Powder-13mm": "images/biasBinding/binding-S1.jpg",
+        "Turq-13mm": "images/biasBinding/binding-B1.jpg",
+        "Royal-13mm": "images/biasBinding/binding-B1.jpg",
+        "Navy-13mm": "images/biasBinding/binding-DB1.jpg",
+        "Grey-13mm": "images/biasBinding/binding-G1.jpg",
+        "Dk Brown-13mm": "images/biasBinding/binding-BR1.jpg",
+        "Black-13mm": "images/biasBinding/binding-BL1.jpg",
+
+        // --- 18mm Section (Suffix: 2) ---
+        "White-18mm": "images/biasBinding/binding-W2.jpg",
+        "Cream-18mm": "images/biasBinding/binding-C2.jpg",
+        "Yellow-18mm": "images/biasBinding/binding-Y2.jpg",
+        "Gold-18mm": "images/biasBinding/binding-G2.jpg",
+        "Old Gold-18mm": "images/biasBinding/binding-G2.jpg",
+        "Orange-18mm": "images/biasBinding/binding-O2.jpg",
+        "Red-18mm": "images/biasBinding/binding-R2.jpg",
+        "Maroon-18mm": "images/biasBinding/binding-BR2.jpg",
+        "Rose-18mm": "images/biasBinding/binding-M2.jpg",
+        "Cerise-18mm": "images/biasBinding/binding-M2.jpg",
+        "Emerald-18mm": "images/biasBinding/binding-G2.jpg",
+        "Bottle-18mm": "images/biasBinding/binding-G2.jpg",
+        "Purple-18mm": "images/biasBinding/binding-P2.jpg",
+        "Powder-18mm": "images/biasBinding/binding-S2.jpg",
+        "Turq-18mm": "images/biasBinding/binding-B2.jpg",
+        "Royal-18mm": "images/biasBinding/binding-B2.jpg",
+        "Navy-18mm": "images/biasBinding/binding-B2.jpg",
+        "Grey-18mm": "images/biasBinding/binding-G2.jpg",
+        "Dk Brown-18mm": "images/biasBinding/binding-BR2.jpg",
+        "Black-18mm": "images/biasBinding/binding-BL2.jpg",
+
+        // --- 25mm Section (Suffix: 5) ---
+        "White-25mm": "images/biasBinding/binding-W5.jpg",
+        "Cream-25mm": "images/biasBinding/binding-C4.jpg", 
+        "Yellow-25mm": "images/biasBinding/binding-Y5.jpg",
+        "Gold-25mm": "images/biasBinding/binding-G5.jpg",
+        "Old Gold-25mm": "images/biasBinding/binding-G5.jpg",
+        "Orange-25mm": "images/biasBinding/binding-O5.jpg",
+        "Red-25mm": "images/biasBinding/binding-R5.jpg",
+        "Maroon-25mm": "images/biasBinding/binding-BR5.jpg",
+        "Rose-25mm": "images/biasBinding/binding-M5.jpg",
+        "Cerise-25mm": "images/biasBinding/binding-M5.jpg",
+        "Emerald-25mm": "images/biasBinding/binding-G5.jpg",
+        "Bottle-25mm": "images/biasBinding/binding-G5.jpg",
+        "Purple-25mm": "images/biasBinding/binding-P5.jpg",
+        "Powder-25mm": "images/biasBinding/binding-S5.jpg",
+        "Turq-25mm": "images/biasBinding/binding-B5.jpg",
+        "Royal-25mm": "images/biasBinding/binding-B5.jpg",
+        "Navy-25mm": "images/biasBinding/binding-DB5.jpg",
+        "Grey-25mm": "images/biasBinding/binding-G5.jpg",
+        "Dk Brown-25mm": "images/biasBinding/binding-BR5.jpg",
+        "Black-25mm": "images/biasBinding/binding-BL5.jpg"
+    };
+    const colorData = [
+        { name: "White", hex: "#ffffff" },
+        { name: "Cream", hex: "#fdf5e6" },
+        { name: "Yellow", hex: "#ffee00" },
+        { name: "Gold", hex: "#ffd700" },
+        { name: "Old Gold", hex: "#cfb53b" },
+        { name: "Orange", hex: "#ff8c00" },
+        { name: "Red", hex: "#ff0000" },
+        { name: "Maroon", hex: "#800000" },
+        { name: "Rose", hex: "#ff007f" },
+        { name: "Cerise", hex: "#de3163" },
+        { name: "Emerald", hex: "#50c878" },
+        { name: "Bottle", hex: "#006a4e" },
+        { name: "Purple", hex: "#800080" },
+        { name: "Powder", hex: "#b0e0e6" },
+        { name: "Turq", hex: "#40e0d0" },
+        { name: "Royal", hex: "#4169e1" },
+        { name: "Navy", hex: "#000080" },
+        { name: "Grey", hex: "#808080" },
+        { name: "Dk Brown", hex: "#5c4033" },
+        { name: "Black", hex: "#000000" }
+    ];
+
+    let selectedColor = "";
+
+    function openSelection(){
+        document.getElementById("modal").style.display = "block";
+        resetToSize();
+    }
+
+    function showColors() {
+        const container = document.getElementById("color-grid-container");
+        container.innerHTML = "";
+        colorData.forEach(color => {
+            const div = document.createElement("div");
+            div.className = "color-item";
+            div.innerHTML = `
+                <div class="color-swatch" style="background:${color.hex}"></div>
+                <div class="color-name">${color.name}</div>
+            `;
+            div.onclick = () => selectColor(color.name, div);
+            container.appendChild(div);
+        });
+        document.getElementById("step-color").style.display = "block";
+    }
+
+    function selectColor(colorName, el) {
+        selectedColor = colorName;
+        const sizeKey = document.getElementById("binding-size").value;
+        
+        // Highlight logic
+        document.querySelectorAll('.color-item').forEach(item => item.style.borderColor = "#ddd");
+        el.style.borderColor = "var(--fawz-red)";
+
+        const modalImg = document.getElementById("modal-img");
+        const lookupKey = `${colorName}-${sizeKey}`;
+        const fileName = productImages[lookupKey];
+
+        // Path update based on manual section
+        if (fileName) {
+            modalImg.src = `images/biasBinding/${fileName}`;
+        } else {
+            // Default to category image if mapping doesn't exist yet
+            modalImg.src = 'images/biasBinding/biasBindingCat.jpg';
+        }
+
+        document.getElementById("product-label").textContent = `${colorName} (${sizeKey})`;
+        document.getElementById("step-qty").style.display = "block";
+    }
+
+    function addToCart() {
+        const size = document.getElementById("binding-size").value;
+        const qty = document.getElementById("qty").value;
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.push({ product: "Bias Binding", size, color: selectedColor, qty });
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        document.getElementById("step-size").style.display = "none";
+        document.getElementById("step-color").style.display = "none";
+        document.getElementById("step-qty").style.display = "none";
+        document.getElementById("step-routing").style.display = "block";
+    }
+
+    function resetToColors() {
+        document.getElementById("step-size").style.display = "block";
+        document.getElementById("step-color").style.display = "block";
+        document.getElementById("step-qty").style.display = "none";
+        document.getElementById("step-routing").style.display = "none";
+    }
+
+    function resetToSize() {
+        document.getElementById("binding-size").value = "";
+        document.getElementById("step-size").style.display = "block";
+        document.getElementById("step-color").style.display = "none";
+        document.getElementById("step-qty").style.display = "none";
+        document.getElementById("step-routing").style.display = "none";
+        document.getElementById("modal-img").src = "images/biasBinding/biasBindingCat.jpg";
+        document.getElementById("product-label").textContent = "Select Width & Color";
+    }
+
+    function closeModal() { document.getElementById("modal").style.display = "none"; }
+    window.onclick = e => { if(e.target == document.getElementById("modal")) closeModal(); }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crochet & Knitting | Fawz Haberdashery</title>
+    <link rel="stylesheet" href="global-images.css">
+
+    <style>
+        :root { 
+            --fawz-red: #e31e24; 
+            --fawz-dark: #1a1a1a; 
+            --fawz-grey: #f8f8f8;
+            --border: #eeeeee;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #ffffff;
+            color: var(--fawz-dark);
+        }
+
+        header {
+            position: sticky; top: 0;
+            background: #ffffff;
+            padding: 15px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 3px solid var(--fawz-red);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+        header h1 { color: var(--fawz-dark); font-size: 1.4em; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        header h1 span { color: var(--fawz-red); }
+        nav a { color: var(--fawz-dark); margin-left: 20px; text-decoration: none; font-weight: 700; font-size: 0.9em; }
+
+        .section { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
+        .section h3 { text-align: center; font-size: 2.2em; margin-bottom: 50px; text-transform: uppercase; }
+        .section h3::after { content: ''; display: block; width: 60px; height: 4px; background: var(--fawz-red); margin: 10px auto; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .card:hover { 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: var(--fawz-red);
+            transform: translateY(-5px);
+        }
+        .card strong { display: block; color: var(--fawz-dark); font-size: 1.1em; text-transform: uppercase; }
+
+        /* MODAL */
+        .modal {
+            display: none; position: fixed; z-index: 2000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white; margin: 8vh auto; width: 90%; max-width: 1000px;
+            height: 75vh; display: flex; border-radius: 8px; overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2); position: relative;
+        }
+        .modal-left { flex: 1; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; border-right: 1px solid var(--border); }
+        .modal-right { flex: 1.2; display: flex; flex-direction: column; }
+        .selection-area { padding: 40px; flex: 1; overflow-y: auto; }
+        .selection-area h2 { color: var(--fawz-red); margin-top: 0; text-transform: uppercase; font-size: 1.6em; }
+
+        label { display: block; margin: 20px 0 8px; font-weight: bold; color: #555; font-size: 0.75em; text-transform: uppercase; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 1em; background: var(--fawz-grey); }
+
+        #price { font-size: 2.2em; font-weight: 900; color: var(--fawz-dark); margin: 25px 0; letter-spacing: 2px; }
+        .btn-add { width: 100%; background: var(--fawz-red); border: none; padding: 18px; color: white; font-weight: 800; text-transform: uppercase; cursor: pointer; border-radius: 4px; }
+
+        .cart-summary { background: var(--fawz-grey); padding: 20px 40px; border-top: 1px solid #ddd; max-height: 180px; overflow-y: auto; }
+        .cart-summary h4 { margin: 0 0 10px; color: var(--fawz-red); font-size: 0.85em; text-transform: uppercase; }
+        .cart-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0; font-size: 0.85em; }
+        .close-x { position: absolute; right: 25px; top: 20px; font-size: 32px; cursor: pointer; color: #bbb; z-index: 10; }
+    </style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+
+<body>
+
+<header>
+    <h1>Fawz <span>Haberdashery</span></h1>
+    <nav>
+        <a href="home.html">Home</a>
+        <a href="demo_cart.html">View Cart</a>
+    </nav>
+</header>
+
+<div class="section">
+    <h3>Crochet & Knitting</h3>
+    <div class="grid">
+        <div class="card" onclick="openModal('Crochet Hook Sets', this.querySelector('img').src)">
+            <!-- ============================================== -->
+            <!-- CARD IMAGE: CROCHET HOOK SETS CATEGORY         -->
+            <!-- Add exact image filename here!                 -->
+            <!-- ============================================== -->
+            <img src="images/crochet/aluminiumAssortedColors.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Crochet+Hook+Sets'">
+            <strong>Crochet Hook Sets</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Knitting Looms', this.querySelector('img').src)">
+            <!-- ============================================== -->
+            <!-- CARD IMAGE: KNITTING LOOMS CATEGORY            -->
+            <!-- Add exact image filename here!                 -->
+            <!-- ============================================== -->
+            <img src="images/crochet/embroideryPunchPen.jpg" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Knitting+Looms'">
+            <strong>Knitting Accessories</strong>
+        </div>
+
+        <div class="card" onclick="openModal('Accessories', this.querySelector('img').src)">
+            <!-- ============================================== -->
+            <!-- CARD IMAGE: ACCESSORIES CATEGORY               -->
+            <!-- Add exact image filename here!                 -->
+            <!-- ============================================== -->
+            <img src="images/crochet/knittingNeedlesStorageBox.webp" class="site-image-card" onerror="this.src='https://via.placeholder.com/300x250?text=Accessories'">
+            <strong>Knitting Needles</strong>
+        </div>
+    </div>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-x" onclick="closeModal()">&times;</span>
+        <div class="modal-left">
+            <img id="modal-img" class="site-image-popup" src="">
+        </div>
+        <div class="modal-right">
+            <div class="selection-area">
+                <h2 id="modal-title">Product</h2>
+                
+                <div id="dynamic-options">
+                    </div>
+
+                <label>Quantity</label>
+                <input type="number" id="qty" value="1" min="1">
+
+                <p id="price">R ####</p>
+                <button class="btn-add" onclick="addToCart()">Add to Cart</button>
+            </div>
+
+            <div class="cart-summary">
+                <h4>Recent Additions</h4>
+                <div id="cart-list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentCategory = "";
+    let selectedProduct = "";
+
+    function openModal(category, imgPath){
+        currentCategory = category;
+        selectedProduct = null;
+        document.getElementById("modal-title").textContent = category;
+        document.getElementById("modal-img").src = imgPath;
+        
+        const optionsDiv = document.getElementById("dynamic-options");
+        optionsDiv.innerHTML = ""; 
+
+        let templateId = "";
+        if(category === 'Crochet Hook Sets') templateId = "tpl-hooks";
+        else if(category === 'Knitting Looms') templateId = "tpl-looms";
+        else if(category === 'Accessories') templateId = "tpl-acc";
+
+        if(templateId) {
+            const tpl = document.getElementById(templateId);
+            optionsDiv.appendChild(tpl.content.cloneNode(true));
+        }
+
+        document.getElementById("modal").style.display = "block";
+        renderCart();
+    }
+
+    function selectOption(element, productName) {
+        selectedProduct = productName;
+        
+        document.querySelectorAll('#dynamic-options .site-option-item').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+
+        const imgEl = element.querySelector('img');
+        if (imgEl && imgEl.src) {
+            document.getElementById("modal-img").src = imgEl.src;
+        }
+    }
+
+    function closeModal() { document.getElementById("modal").style.display = "none"; }
+
+    function renderCart() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const container = document.getElementById("cart-list");
+        container.innerHTML = cart.length ? "" : "<p style='color:#999; font-size:0.8em;'>Cart empty.</p>";
+        
+        cart.slice(-3).reverse().forEach(item => {
+            container.innerHTML += `
+                <div class="cart-item">
+                    <span>${item.selection} x${item.qty}</span>
+                    <strong>R ####</strong>
+                </div>`;
+        });
+    }
+
+    function addToCart(){
+        if (!selectedProduct) {
+            alert("Please select an option first!");
+            return;
+        }
+        const selection = selectedProduct;
+        const qty = document.getElementById("qty").value;
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.push({ category: currentCategory, selection: selection, qty: qty });
+        localStorage.setItem("cart", JSON.stringify(cart));
+        
+        renderCart();
+        if(!confirm("Added " + selection + " to cart!")) closeModal();
+    }
+
+    window.onclick = e => { if(e.target == document.getElementById("modal")) closeModal(); }
+</script>
+
+<!-- ========================================================= -->
+<!-- TEMPLATES FOR POP-UP IMAGE OPTIONS                        -->
+<!-- Use the specific HTML <img> tags below to add             -->
+<!-- your exact file names for each variation.                 -->
+<!-- ========================================================= -->
+
+<template id="tpl-hooks">
+    <label>Select Set Type</label>
+    <div class="site-option-grid">
+        <!-- Add image file name for Aluminium 12s Assorted -->
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Sets Aluminium 12s Assorted')">
+            <img src="images/crochet/hooks_alum_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Aluminium'">
+            <span>Crochet Box Set</span>
+        </div>
+        
+        <!-- Add image file name for Bamboo Set -->
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Sets Bamboo')">
+            <img src="images/crochet/hooks_bamboo_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Bamboo'">
+            <span>Plastic Crochet Hook 7pc</span>
+        </div>
+
+        <!-- Add image file name for Crystal Set -->
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Sets Crystal')">
+            <img src="images/crochet/hooks_crystal_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Crystal'">
+            <span></span>
+        </div>
+
+        <!-- Add image file name for LED Set -->
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Sets LED')">
+            <img src="images/crochet/hooks_led_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=LED'">
+            <span>Crochet Hooks 100pc pink Bag</span>
+        </div>
+
+        <!-- Add image file name for Plastic Handle Set -->
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook sets Plastic Handle')">
+            <img src="images/crochet/hooks_plastic_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Plastic'">
+            <span>Crochet Hooks 10pc purple bag</span>
+        </div>
+
+        <!-- Add image file name for 9pc Rubber Grip -->
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hooks 9pc Rubber Grip')">
+            <img src="images/crochet/hooks_rubber_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Rubber'">
+            <span>Crochet Hooks Plastic box kit</span>
+        </div>
+
+        <!-- Add image file name for Standard Box Set -->
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>LED Crochet Hooks 9pc</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>LED Crochet Hooks 9pc</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>Soft Touch Crochet Hooks Floral Pattern</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>Embroidery Cross stitch Kit</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>Silver Crochet Hook</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>Aluminium Crochet Hook</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>Plastic handle Crochet Hooks 12pc</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>Aluminium Crochet Hooks 12pc</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>Crystal Crochet Hooks 9pc</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>LED Crochet Hooks 9pc</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>Rubber grip crochet Hooks 9pc</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>Bamboo Crochet Hooks 12pc</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>Crochet set 22pc</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Box Set')">
+            <img src="images/crochet/hooks_box_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Box+Set'">
+            <span>Bamboo Crochet Set 20 pc</span>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-looms">
+    <label>Select Loom Shape</label>
+    <div class="site-option-grid">
+        <!-- Add image file name for Rectangle Loom -->
+        
+        
+        <div class="site-option-item" onclick="selectOption(this, 'Knitting Loom Rectangle')">
+            <img src="images/crochet/loom_rect_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Rectangle'">
+            <span>Row Tally</span>
+        </div>
+        
+        <!-- Add image file name for Round Loom -->
+        <div class="site-option-item" onclick="selectOption(this, 'Knitting Loom Round')">
+            <img src="images/crochet/loom_round_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Round'">
+            <span>Knit Markers</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Knitting Loom Round')">
+            <img src="images/crochet/loom_round_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Round'">
+            <span>Plastic Wool Needle</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Knitting Loom Round')">
+            <img src="images/crochet/loom_round_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Round'">
+            <span>Stitch Holder</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Knitting Loom Round')">
+            <img src="images/crochet/loom_round_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Round'">
+            <span>Knittng Needle Gauge</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Knitting Loom Round')">
+            <img src="images/crochet/loom_round_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Round'">
+            <span>Round Kniiting Needle Gauge</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Knitting Loom Round')">
+            <img src="images/crochet/loom_round_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Round'">
+            <span>Miralcle Loom</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Knitting Loom Round')">
+            <img src="images/crochet/loom_round_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Round'">
+            <span>Long Knitting Loom</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Knitting Loom Round')">
+            <img src="images/crochet/loom_round_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Round'">
+            <span>Round Knitting Loom</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'Knitting Loom Round')">
+            <img src="images/crochet/loom_round_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Round'">
+            <span>Knitting Machine</span>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-acc">
+    <label>Select Item</label>
+    <div class="site-option-grid">
+        <!-- Add image file name for Hook Bag Set - Pink -->
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Bag Set Pink')">
+            <img src="images/crochet/bag_pink_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Pink+Bag'">
+            <span>Knitting Needles</span>
+        </div>
+        
+        <!-- Add image file name for Hook Bag Set - Purple (Large) -->
+        <div class="site-option-item" onclick="selectOption(this, 'Crochet Hook Bag Set Purple Large')">
+            <img src="images/crochet/bag_purple_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Purple+Bag'">
+            <span>Crystal Knitting Needles 25cm</span>
+        </div>
+
+        <!-- Add image file name for Fabric Markers -->
+        <div class="site-option-item" onclick="selectOption(this, 'FABRIC MARKERS')">
+            <img src="images/crochet/fabric_markers_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Markers'">
+            <span>Crystal Knitting Needles 35cm</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'FABRIC MARKERS')">
+            <img src="images/crochet/fabric_markers_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Markers'">
+            <span>circular Knitting Needle</span>
+        </div>
+
+        <div class="site-option-item" onclick="selectOption(this, 'FABRIC MARKERS')">
+            <img src="images/crochet/fabric_markers_exact_name.jpg" class="site-image-option" onerror="this.src='https://via.placeholder.com/80?text=Markers'">
+            <span>Bamboo Knitting Needles</span>
+        </div>
+    </div>
+</template>
+
+</body>
+</html>

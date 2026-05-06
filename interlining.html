@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interlining & Tracing | Fawz Haberdashery</title>
+
+    <style>
+        :root { 
+            --fawz-red: #e31e24; --fawz-dark: #1a1a1a; 
+            --fawz-grey: #f8f8f8; --border: #eeeeee;
+        }
+        body { margin: 0; font-family: 'Segoe UI', Roboto, sans-serif; background: #fff; color: var(--fawz-dark); }
+        
+        header { 
+            position: sticky; top: 0; background: #fff; padding: 15px 5%; 
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 3px solid var(--fawz-red); z-index: 1000;
+        }
+        header h1 span { color: var(--fawz-red); }
+
+        .section { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
+        .section h3 { text-align: center; text-transform: uppercase; font-size: 2.2em; margin-bottom: 50px; }
+        .section h3::after { content: ''; display: block; width: 60px; height: 4px; background: var(--fawz-red); margin: 10px auto; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+        
+        .card { 
+            border: 1px solid var(--border); padding: 20px; text-align: center; 
+            cursor: pointer; transition: 0.3s; border-radius: 4px; background: #fff;
+        }
+        .card:hover { border-color: var(--fawz-red); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .card img { width: 100%; height: 200px; object-fit: contain; margin-bottom: 15px; }
+        .card strong { display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); }
+        .modal-content { background: white; margin: 5vh auto; width: 90%; max-width: 1000px; height: 80vh; display: flex; border-radius: 8px; overflow: hidden; position: relative; }
+        .modal-left { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; border-right: 1px solid var(--border); }
+        .modal-left img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .modal-right { flex: 1.2; padding: 40px; display: flex; flex-direction: column; overflow-y: auto; }
+        
+        label { display: block; font-weight: bold; font-size: 0.8em; text-transform: uppercase; color: #666; margin-top: 15px; }
+        select, input { width: 100%; padding: 12px; margin: 8px 0 15px; border: 1px solid #ddd; background: var(--fawz-grey); border-radius: 4px; }
+        #price { font-size: 2.2em; font-weight: 800; margin: 20px 0; }
+        .btn-add { background: var(--fawz-red); color: white; border: none; padding: 18px; width: 100%; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 4px; }
+        .btn-add:hover { background: #c1171c; }
+        .close-x { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #999; }
+    </style>
+    <script src="firebase-config.js" type="module"></script>
+    <script src="fawz-product-id-map.js"></script>
+    <script src="fawz-firebase-pricing.js" type="module"></script>
+    <script src="fawz-security.js" defer></script>
+</head>
+
+<body>
+
+<header>
+    <h1>Fawz <span>Haberdashery</span></h1>
+</header>
+
+<div class="section">
+    <h3>Interlining & Tracing</h3>
+
+    <div class="grid">
+
+        <div class="card" onclick="openModal(this)"
+            data-name="Non-Woven Interlining"
+            data-img="images/nonwoven.jpg"
+            data-options="100 Yards,25 Yards"
+            data-colors="">
+            <img src="images/nonwoven.jpg">
+            <strong>NON-WOVEN</strong>
+        </div>
+
+        <div class="card" onclick="openModal(this)"
+            data-name="Tracing Material"
+            data-img="images/tracing-main.jpg"
+            data-options="Standard"
+            data-colors="Pink,Blue,Green">
+            <img src="images/tracing-main.jpg">
+            <strong>Tracing Material</strong>
+        </div>
+
+        <div class="card" onclick="openModal(this)"
+            data-name="Water Soluble Interlining"
+            data-img="images/water-sol-main.jpg"
+            data-options="30cm x 100 Yards"
+            data-colors="">
+            <img src="images/water-sol-main.jpg">
+            <strong>Water Soluble</strong>
+        </div>
+
+        <div class="card" onclick="openModal(this)"
+            data-name="PP Embroidery Interlining"
+            data-img="images/pp-emb-main.jpg"
+            data-options="40 inch x 50 Yards"
+            data-colors="White">
+            <img src="images/pp-emb-main.jpg">
+            <strong>PP Embroidery</strong>
+        </div>
+
+        <div class="card" onclick="openModal(this)"
+            data-name="Spider Interlining"
+            data-img="images/spider-main.jpg"
+            data-options="44 inch x 50 Yards"
+            data-colors="White">
+            <img src="images/spider-main.jpg">
+            <strong>Spider Interlining</strong>
+        </div>
+
+        <div class="card" onclick="openModal(this)"
+            data-name="STF Interlining"
+            data-img="images/stf-main.jpg"
+            data-options="44 inch (25m),60 inch (25m)"
+            data-colors="White,Black">
+            <img src="images/stf-main.jpg">
+            <strong>STF Interlining</strong>
+        </div>
+
+        <div class="card" onclick="openModal(this)"
+            data-name="Micro Dot Interlining"
+            data-img="images/microdot-main.jpg"
+            data-options="35 GSM (100cm x 100m),75 GSM (100cm x 100m)"
+            data-colors="">
+            <img src="images/microdot-main.jpg">
+            <strong>Micro Dot</strong>
+        </div>
+
+        <div class="card" onclick="openModal(this)"
+            data-name="Dimension Interlining"
+            data-img="images/taffeta-main.jpg"
+            data-options="60 inch (25m)"
+            data-colors="White,Black">
+            <img src="images/taffeta-main.jpg">
+            <strong>Dimension</strong>
+        </div>
+
+        <div class="card" onclick="openModal(this)"
+            data-name="Collar Fusing"
+            data-img="images/collar-main.jpg"
+            data-options="Standard (25m),Premium (10m)"
+            data-colors="">
+            <img src="images/collar-main.jpg">
+            <strong>Collar Fusing</strong>
+        </div>
+
+        <div class="card" onclick="openModal(this)"
+            data-name="Red Line"
+            data-img="images/redline-main.jpg"
+            data-options="44 inch (50m)"
+            data-colors="">
+            <img src="images/redline-main.jpg">
+            <strong>Red Line</strong>
+        </div>
+
+        <div class="card" onclick="openModal(this)"
+            data-name="Pattern Paper"
+            data-img="images/paper-main.jpg"
+            data-options="80 GSM (50m),120 GSM (25m),150 GSM (25m),180 GSM (25m),280 GSM (25m)"
+            data-colors="">
+            <img src="images/paper-main.jpg">
+            <strong>Pattern Paper</strong>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-x" onclick="closeModal()">&times;</span>
+        <div class="modal-left">
+            <img id="modal-img">
+        </div>
+        <div class="modal-right">
+            <h2 id="modal-title" style="color:var(--fawz-red); text-transform:uppercase;"></h2>
+
+            <div id="options-area"></div>
+
+            <label>Quantity</label>
+            <input type="number" value="1" min="1">
+
+            <p id="price">R ####</p>
+            <button class="btn-add">Add to Cart</button>
+        </div>
+    </div>
+</div>
+
+<!-- VARIANT IMAGE CONTROL (HTML BASED) -->
+<div id="variant-image-data" style="display:none;">
+
+    <!-- COLORS -->
+    <img data-key="White" src="images/colors/white.jpg">
+    <img data-key="Black" src="images/colors/black.jpg">
+    <img data-key="Pink" src="images/colors/pink.jpg">
+    <img data-key="Blue" src="images/colors/blue.jpg">
+    <img data-key="Green" src="images/colors/green.jpg">
+
+    <!-- PATTERN PAPER FULL CONTROL -->
+    <img data-key="80 GSM (50m)" src="images/paper/80gsm.jpg">
+    <img data-key="120 GSM (25m)" src="images/paper/120gsm.jpg">
+    <img data-key="150 GSM (25m)" src="images/paper/150gsm.jpg">
+    <img data-key="180 GSM (25m)" src="images/paper/180gsm.jpg">
+    <img data-key="280 GSM (25m)" src="images/paper/280gsm.jpg">
+
+</div>
+
+<script>
+let currentDefaultImg = "";
+
+function openModal(el){
+    const name = el.dataset.name;
+    const img = el.dataset.img;
+    const options = el.dataset.options.split(',');
+    const colors = el.dataset.colors ? el.dataset.colors.split(',') : [];
+
+    currentDefaultImg = img;
+
+    document.getElementById('modal-title').innerText = name;
+    document.getElementById('modal-img').src = img;
+
+    let html = '';
+
+    if(options[0] !== ""){
+        html += `<label>Select Variation</label>
+        <select id="opt-sel" onchange="updateImage()">`;
+        options.forEach(o=> html+=`<option>${o}</option>`);
+        html += `</select>`;
+    }
+
+    if(colors.length){
+        html += `<label>Select Color</label>
+        <select id="col-sel" onchange="updateImage()">`;
+        colors.forEach(c=> html+=`<option>${c}</option>`);
+        html += `</select>`;
+    }
+
+    document.getElementById('options-area').innerHTML = html;
+    document.getElementById('modal').style.display = "block";
+}
+
+function updateImage(){
+    const opt = document.getElementById('opt-sel')?.value;
+    const col = document.getElementById('col-sel')?.value;
+
+    let found = null;
+    document.querySelectorAll('#variant-image-data img').forEach(img=>{
+        if(img.dataset.key === col || img.dataset.key === opt){
+            found = img.src;
+        }
+    });
+
+    document.getElementById('modal-img').src = found || currentDefaultImg;
+}
+
+function closeModal(){
+    document.getElementById('modal').style.display = "none";
+}
+
+window.onclick = function(e){
+    if(e.target == document.getElementById('modal')){
+        closeModal();
+    }
+}
+</script>
+
+</body>
+</html>
